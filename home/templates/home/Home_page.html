@@ -1,0 +1,313 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, shrink-to-fit=no">
+    <title>Library Management</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'Home_page.css' %}">
+</head>
+
+<body>
+     <!-- Navbar -->
+ 
+     <div class="navbar-container">
+        <div class="navbar-top">
+            <div class="row">
+            <a href="#">Home</a>&nbsp&nbsp
+            <a href="/Admin/HTML/login.html">Admin Login</a>&nbsp;&nbsp
+            <a href="/User/HTML/Newspaper.html">Newspapers📰</a>&nbsp&nbsp
+            <a href="/User/HTML/Bestsellers.html">Bestsellers</a>&nbsp&nbsp
+            <a href="/User/HTML/Magazine.html">Magazines📔</a>&nbsp&nbsp
+            <a href="/User/HTML/New_releases.html">Early Releases</a>&nbsp&nbsp
+            <a href="/User/HTML/user_login.html">User Login</a>&nbsp&nbsp
+            <a href="/User/HTML/List_of_books.html">Book List📚</a>&nbsp&nbsp
+            <a href="/User/HTML/membership_through_homepage.html" class="join">
+                <span style="font-style: italic;">Membership Plans</span>
+              </a>
+              
+        </div>
+        </div>
+        <div class="row">
+        <div style="color: black;font-style: italic;font-size: 35px"  class="logo">
+           <div style="text-decoration: underline;">
+            Library Management System </div><span>🎄</span>
+        </div>
+        </div>
+        </div>
+    </div>
+
+    <!-- Categories Navigation -->
+    <div class="categories">
+        <a href="/User/HTML/Thriller.html">THRILLER</a>
+        <a href="/User/HTML/Historical.html">HISTORICAL</a>
+        <a href="/User/HTML/Horror.html">HORROR</a>
+        <a href="/User/HTML/Fantasy.html">FANTASY</a>
+        <a href="/User/HTML/Mystery_page.html">MYSTERY</a>
+        <a href="/User/HTML/Comic_page.html">COMIC</a>
+        <a href="/User/HTML/Non-Fiction.html">NON FICTION</a>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <input type="text" placeholder="Search Title, Author, Keyword..." class="search-bar" id="searchInput">
+        <i class="fas fa-search search-icon"></i>
+    
+        <div class="results" id="results"></div>
+    </div>
+    <div class="search-container">
+       
+    </div>
+    <!-- Banner Section -->
+    <div class="banner">
+        <div class="banner-content">
+
+            <h1>For She is Wrath</h1>
+            <h2>Exclusive Edition</h2>
+            <a href="/Books,magazines and Newspaper/She_Is_Wrath.html" class="buy-button">View</a>
+        </div>
+    </div>
+
+    <h1><br><span style="font-style: italic;color: #4caf50;">Our Bestsellers</span></h1>
+    <div class="bestsellers-section">
+        <!-- Book Frame 1 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Quarter_to_Midnight.jpg" alt="Book 1">
+            <div class="book-title">Quarter to Midnight</div>
+            <div class="book-author">Karen Rose</div>
+            <a href="/Books,magazines and Newspaper/Quarter_to_Midnight_Overview.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 2 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/blue_hour1.jpg" alt="Book 2">
+            <div class="book-title">The Blue Hour</div>
+            <div class="book-author">Paula Hawkins</div>
+            <a href="/Books,magazines and Newspaper/The _Blue _Hour.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 3 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Vile_Season.jpg" alt="Book 3">
+            <div class="book-title">A Vile Season</div>
+            <div class="book-author">David Ferraro</div>
+            <a href="/Books,magazines and Newspaper/A_Vile_Season.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 4 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Curdle_Creek.jpg" alt="Book 4">
+            <div class="book-title">Curdle Creek</div>
+            <div class="book-author">Yvonne Battle Felton</div>
+            <a href="/Books,magazines and Newspaper/Curdle_Creek.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 5 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/She_Wrath.jpg" alt="Book 5">
+            <div class="book-title">For She is Wrath</div>
+            <div class="/Books,magazines and Newspaper/book-author">Emily Vanga</div>
+            <a href="/Books,magazines and Newspaper/She_Is_Wrath.html" class="buy-button">View</a>
+        </div>
+    </div>
+
+    </div>
+
+    <h1><br><span style="font-style: italic;color: #4caf50;">Everyone's Talking About</span></h1>
+    <div class="bestsellers-section">
+        <!-- Book Frame 1 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Specimen.jpg" alt="Book 1">
+            <div class="book-title">The Specimen</div>
+            <div class="book-author">Jaima Fixsen</div>
+            <a href="/Books,magazines and Newspaper/The_Specimen.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 2 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Thought_We_Knew.jpg" alt="Book 2">
+            <div class="book-title">All We Thought We Knew</div>
+            <div class="book-author">Michelle Shocklee</div>
+            <a href="/Books,magazines and Newspaper/All_We_Thought_We_Knew.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 3 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Kingdom_to_Claim.jpg" alt="Book 3">
+            <div class="book-title">A Kingdom to Claim</div>
+            <div class="book-author">Sian Ann Bessey</div>
+            <a href="/Books,magazines and Newspaper/Kingdom_to_Claim.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 4 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Lonely_Places.jpg" alt="Book 4">
+            <div class="book-title">Lonely Places</div>
+            <div class="book-author">Kate Anderson</div>
+            <a href="/Books,magazines and Newspaper/Lonely_Places.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 5 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Two Good Men.jpg" alt="Book 5">
+            <div class="book-title">Two Good Men</div>
+            <div class="book-author">S C Redfearn</div>
+            <a href="/Books,magazines and Newspaper/Two_Good_Men.html" class="buy-button">View</a>
+        </div>
+    </div>
+
+    <h1><br><span style="font-style: italic;color: #4caf50;">Our Best Fiction Books</span></h1>
+    <div class="bestsellers-section">
+        <!-- Book Frame 1 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Hurt _Moment.jpg" alt="Book 1">
+            <div class="book-title">It Will Only Hurt For a Moment</div>
+            <div class="book-author">Delilah S Dawson</div>
+            <a href="/Books,magazines and Newspaper/Hurt_for_a_Moment.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 2 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Match _for_Love.jpg" alt="Book 2">
+            <div class="book-title">No Match For Love</div>
+            <div class="book-author">Karen Thornell</div>
+            <a href="/Books,magazines and Newspaper/No_Match_for_Love.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 3 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/President's_Lawyer.jpg" alt="Book 3">
+            <div class="book-title">The President's Lawyer</div>
+            <div class="book-author">Lawrence S Robbins</div>
+            <a href="/Books,magazines and Newspaper/The_President's_Lawyer.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 4 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Brooding_Baron.jpg" alt="Book 4">
+            <div class="book-title">To Love the Brooding Baron</div>
+            <div class="book-author">Jentry Flint</div>
+            <a href="/Books,magazines and Newspaper/Love _the_Brooding_Baron.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 5 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Academy_Liars.jpg" alt="Book 5">
+            <div class="book-title">An Academy for Liars</div>
+            <div class="book-author">Alexis Henderson</div>
+            <a href="/Books,magazines and Newspaper/Academy_Liars.html" class="buy-button">View</a>
+        </div>
+    </div>
+
+    <h1><br><span style="font-style: italic;color: #4caf50;">Our Best Nonfiction Books</span></h1>
+    <div class="bestsellers-section">
+        <!-- Book Frame 1 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Framed.jpg" alt="Book 1">
+            <div class="book-title">Framed</div>
+            <div class="book-author">John Grisham</div>
+            <a href="/Books,magazines and Newspaper/Framed.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 2 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Scary.jpg" alt="Book 2">
+            <div class="book-title">American Scary</div>
+            <div class="book-author">Jeremy Dauber</div>
+            <a href="/Books,magazines and Newspaper/Scary.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 3 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Nice.jpg" alt="Book 3">
+            <div class="book-title">Play Nice</div>
+            <div class="book-author">Jason Schreier</div>
+            <a href="/Books,magazines and Newspaper/Nice.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 4 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Winter.jpg" alt="Book 4">
+            <div class="book-title">How to Winter</div>
+            <div class="book-author">Kari Leibowitz</div>
+            <a href="/Books,magazines and Newspaper/Winter.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 5 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Cosmos.jpg" alt="Book 5">
+            <div class="book-title">Infinite Cosmos</div>
+            <div class="book-author">Ethan Siegal</div>
+            <a href="/Books,magazines and Newspaper/Cosmos.html" class="buy-button">View</a>
+        </div>
+    
+    </div>
+    <h1><br><span style="font-style: italic;color: #4caf50;">Early Releases</span></h1>
+    <div class="bestsellers-section">
+        <!-- Book Frame 1 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/check_mate.jpeg" alt="Book 1">
+            <div class="book-title">Check & Mate</div>
+            <div class="book-author">Ali Hazelwood</div>
+            <a href="/Books,magazines and Newspaper/Check_and_mate.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 2 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Naked_City.jpg" alt="Book 2">
+            <div class="book-title">Naked City</div>
+            <div class="book-author">Eric Drooker</div>
+            <a href="/Books,magazines and Newspaper/Naked_City.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 3 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Pocket.jpg" alt="Book 3">
+            <div class="book-title">Pocket Peaches</div>
+            <div class="book-author">Dora Wang</div>
+            <a href="/Books,magazines and Newspaper/Pocket_Peaches.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 4 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Stand.jpg" alt="Book 4">
+            <div class="book-title">Stand Up!</div>
+            <div class="book-author">Tori Sharp</div>
+            <a href="/Books,magazines and Newspaper/Stand.html" class="buy-button">View</a>
+        </div>
+        
+        <!-- Book Frame 5 -->
+        <div class="book-frame">
+            <img src="/Books,magazines and Newspaper/Princess.jpg" alt="Book 5">
+            <div class="book-title">The Pirate Princess</div>
+            <div class="book-author">Luca Frigerio</div>
+            <a href="/Books,magazines and Newspaper/Princess.html" class="buy-button">View</a>
+        </div>
+    
+    </div>
+
+    <div style="border-top: 1px solid #ccc;">
+        
+        <footer style="color: black;; font-family: Arial, sans-serif; width: 100%; bottom: 0; left: 0;background-color:rgb(243, 235, 189);">
+            <div style=" margin: auto; display: flex;width: 95vw;font-style:italic; justify-content: space-between; text-align: left;">
+                <div style="flex: 1;margin-top: 20px;">
+                    <p><strong>Location:</strong><br><br>
+                        123 GRA 531, Gowreesapattom<br>
+                        Trivandrum, Kerala, 695004<br>
+                        Ph :7356388735, 9995631992</p>
+                </div>
+                
+                <div style="flex: 1;margin-top: 20px; text-align: right;">
+                    <p><strong>Contact Us:</strong><br><br>
+                        Phone: 7356388735<br>
+                        Email: <a href="mailto:info@librarymanagementsystem.org" style="color: black; text-decoration: none;">info@librarymanagementsystem.org</a></p>
+                    <p>© 2024 Library Management System. All Rights Reserved.<br></p>
+                </div>
+            </div>
+        </footer>
+        </div>
+
+        <script src="{% static 'Home_page.js' %}"></script>
+</body>
+</html>

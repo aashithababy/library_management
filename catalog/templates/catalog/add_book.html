@@ -1,1 +1,66 @@
- 
+{% extends 'admin/base_site.html' %}
+
+{% block content %}
+  <h1>Add a New Book</h1>
+  <form method="post">
+    {% csrf_token %}
+
+    <p>
+      {{ form.title.label_tag }} {{ form.title }}
+    </p>
+
+    <p>
+      {{ form.author_name.label_tag }} {{ form.author_name }}
+    </p>
+
+    <p>
+      {{ form.genre.label_tag }} {{ form.genre }}
+    </p>
+
+    <p>
+      {{ form.published_year.label_tag }} {{ form.published_year }}
+    </p>
+
+    <p>
+      {{ form.isbn.label_tag }} {{ form.isbn }}
+    </p>
+
+    <p>
+      {{ form.price.label_tag }} {{ form.price }}
+    </p>
+
+    <p>
+      {{ form.rent_price.label_tag }} {{ form.rent_price }}
+    </p>
+
+    <p>
+      {{ form.is_bestseller.label_tag }} {{ form.is_bestseller }}
+    </p>
+
+    <p>
+      {{ form.is_early_release.label_tag }} {{ form.is_early_release }}
+    </p>
+
+    <p>
+      {{ form.content_link.label_tag }} {{ form.content_link }}
+    </p>
+
+    <p>
+      {{ form.access_level.label_tag }} {{ form.access_level }}
+    </p>
+
+    <p>
+      {{ form.read_count.label_tag }} {{ form.read_count }}
+    </p>
+
+    <p>
+      {{ form.popularity_score.label_tag }} {{ form.popularity_score }}
+    </p>
+
+    <p>
+      {{ form.rating.label_tag }} {{ form.rating }}
+    </p>
+
+    <button type="submit">Add Book please</button>
+  </form>
+{% endblock %}
