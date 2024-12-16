@@ -19,8 +19,21 @@ def book_detail(request, pk):
 def add_book(request):
     if request.method == 'POST':
         form = BookForm(request.POST)
+        author_name = request.POST.get('authors_name')
+        
         if form.is_valid():
-            form.save()
+            # Check if the author exists
+            try:
+                author = Author.objects.get(name=author_name)
+            except Author.DoesNotExist:
+                # Ask the admin if they want to add the new author
+                request.session['new_author_name'] = author_name
+                return redirect('confirm_add_author')
+            
+            # Save the book with the existing author
+            book = form.save(commit=False)
+            book.author = author
+            book.save()
             messages.success(request, "Book added successfully!")
             return redirect('admin:catalog_book_changelist')
     else:
@@ -28,25 +41,22 @@ def add_book(request):
     
     return render(request, 'catalog/add_book.html', {'form': form})
 
-
 @login_required
 def confirm_add_author(request):
+    new_author_name = request.session.get('new_author_name')
+
     if request.method == 'POST':
-        author_name = request.POST.get('author_name')
         action = request.POST.get('action')
         
-        if action == 'yes' and author_name:
-            # Create and save the new author
-            Author.objects.create(name=author_name)
-            messages.success(request, f"New author '{author_name}' added successfully!")
-            return redirect('add_book')  # Redirect to the add book form to continue adding the book
-        
+        if action == 'yes' and new_author_name:
+            Author.objects.create(name=new_author_name)
+            messages.success(request, f"New author '{new_author_name}' added successfully!")
+            return redirect('add_book')
         elif action == 'no':
-            # Go back to the add book form
+            messages.info(request, "Book addition cancelled.")
             return redirect('add_book')
     
-    return redirect('add_book')  # If GET, redirect to the book add form
-
+    return render(request, 'catalog/confirm_add_author.html', {'author_name': new_author_name})
 
 def add_author(request):
     if request.method == 'POST':
@@ -72,3 +82,10 @@ def update_book(request, pk):
     else:
         form = BookForm(instance=book)
     return render(request, 'catalog/update_book.html', {'form': form})
+
+from django.http import JsonResponse
+
+def search_author(request):
+    author_name = request.GET.get('name')
+    exists = Author.objects.filter(name=author_name).exists()
+    return JsonResponse({'exists': exists})

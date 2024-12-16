@@ -56,6 +56,8 @@ class BookForm(forms.ModelForm):
 
     def clean_rent_price(self):
         rent_price = self.cleaned_data.get('rent_price')
+        if rent_price is None:
+            raise forms.ValidationError('Rent price is required.')
         if rent_price <= 0:
             raise forms.ValidationError('Rent price must be greater than 0.')
         return rent_price

@@ -1,14 +1,12 @@
-{% extends 'admin/base_site.html' %}
+<form method="post">
+  {% csrf_token %}
+  <p>Author "{{ author_name }}" does not exist. Would you like to add them?</p>
+  <button type="submit" name="action" value="yes">Yes, Add Author</button>
+  <button type="submit" name="action" value="no">No, Cancel</button>
+</form>
 
-{% block content %}
-  <h1>Author not found</h1>
-  <p>The author "{{ author_name }}" does not exist in the database.</p>
-  <p>Would you like to add this author?</p>
-  
-  <form method="POST">
-    {% csrf_token %}
-    <input type="hidden" name="author_name" value="{{ author_name }}">
-    <button type="submit" name="action" value="yes">Yes, add this author</button>
-    <button type="submit" name="action" value="no">No, go back</button>
-  </form>
-{% endblock %}
+{% if messages %}
+  {% for message in messages %}
+      <p>{{ message }}</p>
+  {% endfor %}
+{% endif %}

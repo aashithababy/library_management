@@ -22,21 +22,20 @@ def validate_url_or_local_path(value):
     if not re.match(url_pattern, value) and not re.match(local_path_pattern, value):
         raise ValidationError("Invalid URL or local path.")
 
-# Books Table
 class Book(models.Model):
     book_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
-    authors_name = models.CharField(max_length=255, default='Unknown Author')
+    author = models.ForeignKey('Author', on_delete=models.CASCADE)  # ForeignKey to Author
     genre = models.CharField(max_length=255)
     description = models.TextField(null=True, blank=True)
     published_year = models.PositiveIntegerField()
-    isbn = models.CharField(max_length=20)
+    isbn = models.CharField(max_length=13)
     price = models.DecimalField(max_digits=10, decimal_places=2)
-    rent_price = models.DecimalField(max_digits=10, decimal_places=2,null=True, blank=True)
+    rent_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     is_bestseller = models.BooleanField()
     is_early_release = models.BooleanField()
     content_link = models.URLField(null=True, blank=True, validators=[validate_url_or_local_path])
-    access_level = models.CharField(max_length=50,null=True, blank=True)
+    access_level = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_count = models.PositiveIntegerField(null=True, blank=True)
     popularity_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
@@ -45,9 +44,12 @@ class Book(models.Model):
     deleted_at = models.DateTimeField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
 
+    class Meta:
+        ordering = ['author']
+
     def __str__(self):
         return self.title
-    # Custom validator to allow both URLs and file paths
+
 
 class YourModel(models.Model):
     content_link = models.URLField(null=True, blank=True, validators=[validate_url_or_local_path])
@@ -60,10 +62,6 @@ class Author(models.Model):
     nationality = models.CharField(max_length=255, null=True, blank=True)  # Optional
     birth_date = models.DateField(null=True, blank=True)  # Optional
     death_date = models.DateField(null=True, blank=True)  # Optional
-
-    # ForeignKey to Book
-    books = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='authors', default='1')
-
     def __str__(self):
         return self.name
 
