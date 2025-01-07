@@ -1,0 +1,298 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choose Payment</title>
+    <link rel="stylesheet" href="/User/CSS/payment.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+        }
+
+        .background {
+            background-image: url('/User/IMG/payment-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            width: 100%;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: -1;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: black;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 6px 4px goldenrod;
+        }
+
+        h1 {
+            text-align: center;
+            color: goldenrod;
+            margin-bottom: 30px;
+        }
+
+        .payment-options {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+        }
+
+        .option {
+            text-align: center;
+            flex: 1;
+            background-color: lightgoldenrodyellow;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .option:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 0 6px 4px goldenrod;
+        }
+
+        .option img {
+            width: 100px;
+            height: auto;
+            margin-bottom: 15px;
+        }
+
+        .option h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .option button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .option button:hover {
+            background: #0056b3;
+        }
+
+        .popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .popup-content {
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            width: 400px;
+            text-align: center;
+            position: relative;
+        }
+
+        .popup-content .close {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .popup-content form {
+            margin-top: 20px;
+        }
+
+        .popup-content form label {
+            display: block;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .popup-content form input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .error-message {
+            color: red;
+            display: none;
+            font-size: 12px;
+            margin-top: 5px;
+        }
+
+        .popup-content form button {
+            background: #28a745;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .popup-content form button:hover {
+            background: #218838;
+        }
+    </style>
+</head>
+<body>
+    <div class="background"></div>
+    <div class="container">
+        <h1>Choose Payment Method</h1>
+        <form method="post" action="{% url 'process_payment' %}">
+            {% csrf_token %}
+            <input type="hidden" name="membership_plan" value="{{ membership_plan }}">
+            <input type="hidden" name="source_page" value="{{ source_page }}">
+            <div class="payment-options">
+                <!-- Google Pay -->
+                <div class="option">
+                    <img src="{% static 'images/google_pay.png' %}" alt="Google Pay"><br><br>
+                    <h2>Google Pay</h2>
+                    <button type="button" onclick="openPopup('Google Pay')">Choose</button>
+                </div>
+                <!-- Credit Card -->
+                <div class="option">
+                    <img src="{% static 'images/visa.png' %}" alt="Credit Card"><br><br>
+                    <h2>Credit Card</h2>
+                    <button type="button" onclick="openPopup('Credit Card')">Choose</button>
+                </div>
+                <!-- Bank Transfer -->
+                <div class="option">
+                    <img src="{% static 'images/bank_transfer.png' %}" alt="Bank Transfer">
+                    <h2>Bank Transfer</h2>
+                    <button type="button" onclick="openPopup('Bank Transfer')">Choose</button>
+                </div>
+            </div>
+        </form>
+
+        <!-- Popup for Payment Details -->
+        <div id="popup" class="popup">
+            <div class="popup-content">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <h2 id="payment-method"></h2>
+                <form id="payment-form" method="post" action="{% url 'process_payment' %}" onsubmit="return validateForm(event)">
+                    {% csrf_token %}
+                    <input type="hidden" name="membership_plan" value="{{ membership_plan }}">
+                    <input type="hidden" name="source_page" value="{{ source_page }}">
+                    <input type="hidden" id="selected-method" name="payment_method" value="">
+                    <div id="payment-details"></div>
+                    <button type="submit" id="submit-btn" disabled>Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Disable submit button initially
+        document.getElementById("submit-btn").disabled = true;
+
+        function openPopup(method) {
+            document.getElementById("popup").style.display = "flex";
+            document.getElementById("payment-method").innerText = method;
+
+            const paymentDetails = document.getElementById("payment-details");
+            paymentDetails.innerHTML = '';
+
+            if (method === 'Google Pay') {
+                paymentDetails.innerHTML = `
+                <label for="googlepay-id">Google Pay ID:</label>
+                <input type="text" id="googlepay-id" placeholder="example@upi" name="googlepay-id" required>
+                <span class="error-message" id="googlepay-error">Invalid Google Pay ID format (e.g., example@upi).</span>
+            `;
+
+            addValidation('googlepay-id', 'googlepay-error', /^[a-zA-Z0-9._%+-]+@[a-zA-Z]+$/);
+
+            } else if (method === 'Credit Card') {
+                paymentDetails.innerHTML = `
+                    <label for="cc-number">Card Number:</label>
+                    <input type="text" id="cc-number" placeholder="12 to 16 digits" name="cc-number" required>
+                    <span class="error-message" id="cc-number-error">Card number must be between 12 to 16 digits.</span>
+
+                    <label for="cc-expiry">Expiry Date:</label>
+                    <input type="text" id="cc-expiry" placeholder="MM/YY" name="cc-expiry" required>
+                    <span class="error-message" id="cc-expiry-error">Enter a valid expiry date in MM/YY format.</span>
+
+                    <label for="cc-cvv">CVV:</label>
+                    <input type="text" id="cc-cvv" placeholder="3 or 4 digits" name="cc-cvv" required>
+                    <span class="error-message" id="cc-cvv-error">CVV must be 3 or 4 digits.</span>
+
+                    <label for="cc-name">Cardholder Name:</label>
+                    <input type="text" id="cc-name" placeholder="Full Name" name="cc-name" required>
+                    <span class="error-message" id="cc-name-error">Name must only contain letters and spaces.</span>
+                `;
+                addValidation('cc-number', 'cc-number-error', /^[0-9]{12,16}$/);
+                addValidation('cc-expiry', 'cc-expiry-error', /^(0[1-9]|1[0-2])\/?([0-9]{2})$/);
+                addValidation('cc-cvv', 'cc-cvv-error', /^[0-9]{3,4}$/);
+                addValidation('cc-name', 'cc-name-error', /^[A-Za-z ]+$/);
+            } else if (method === 'Bank Transfer') {
+                paymentDetails.innerHTML = `
+                    <label for="bank-account">Bank Account Number:</label>
+                    <input type="text" id="bank-account" placeholder="10 to 12 digits" name="bank-account" required>
+                    <span class="error-message" id="bank-account-error">Account number must be 10 to 12 digits.</span>
+
+                    <label for="bank-routing">Routing Number:</label>
+                    <input type="text" id="bank-routing" placeholder="ABCD1234" name="bank-routing" required>
+                    <span class="error-message" id="bank-routing-error">Routing number must be 4 letters followed by 4 digits.</span>
+
+                    <label for="bank-holder-name">Account Holder Name:</label>
+                    <input type="text" id="bank-holder-name" placeholder="Full Name" name="bank-holder-name" required>
+                    <span class="error-message" id="bank-holder-name-error">Name must only contain letters and spaces.</span>
+                `;
+                addValidation('bank-account', 'bank-account-error', /^[0-9]{10,12}$/);
+                addValidation('bank-routing', 'bank-routing-error', /^[A-Za-z]{4}[0-9]{4}$/);
+                addValidation('bank-holder-name', 'bank-holder-name-error', /^[A-Za-z ]+$/);
+            }
+
+            document.getElementById("submit-btn").disabled = true;
+        }
+
+        function closePopup() {
+            document.getElementById("popup").style.display = "none";
+            document.getElementById("payment-form").reset();
+            document.getElementById("submit-btn").disabled = true;
+        }
+
+        function addValidation(inputId, errorId, regex) {
+            const inputElement = document.getElementById(inputId);
+            const errorElement = document.getElementById(errorId);
+            inputElement.addEventListener('input', function () {
+                if (regex.test(inputElement.value)) {
+                    errorElement.style.display = 'none';
+                    document.getElementById("submit-btn").disabled = false;
+                } else {
+                    errorElement.style.display = 'block';
+                    document.getElementById("submit-btn").disabled = true;
+                }
+            });
+        }
+
+        function validateForm(event) {
+            event.preventDefault();
+            alert("Payment information is valid. Proceeding with payment.");
+            closePopup(); 
+            window.location.href = "/"; 
+        }
+    </script>
+</body>
+</html>

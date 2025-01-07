@@ -1,0 +1,18 @@
+<form method="post">
+    {% csrf_token %}
+    <label for="membership_plan">Membership Plan:</label>
+    <select name="membership_plan">
+        {% for plan in membership_plans %}
+            <option value="{{ plan.id }}">{{ plan.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <label for="subscription_plan">Subscription Plan:</label>
+    <select name="subscription_plan">
+        {% for plan in subscription_plans %}
+            <option value="{{ plan.id }}">{{ plan.name }}</option>
+        {% endfor %}
+    </select><br>
+
+    <button type="submit">Update Plans</button>
+</form>

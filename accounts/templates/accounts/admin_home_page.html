@@ -1,0 +1,205 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body {
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            background-color: #000;
+            background-repeat: no-repeat;
+            color: gold;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+        header {
+            text-align: left;
+            background-color: rgba(0, 0, 0, 0.9);
+            padding: 15px 0;
+            border-bottom: 2px solid goldenrod;
+        }
+        header h1 {
+            display: inline-block;
+            color: goldenrod;
+            font-size: 35px;
+            margin: 0;
+        }
+        header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 60%;
+            margin-right: 10px;
+        }
+        .container {
+            display: flex;
+            flex: 1;
+            padding: 20px;
+            margin-left: 0;
+            justify-content: center; /* Center the content */
+        }
+        {% comment %} .content {
+            flex: 1;
+            background-color: rgba(0, 0, 0, 0.85);
+            border: 2px solid goldenrod;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px goldenrod;
+        } {% endcomment %}
+        .box-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow wrapping of cards for responsiveness */
+        }
+        .box {
+            width: 250px;
+            height: 250px; /* Ensure uniform size for all boxes */
+            border: 2px solid goldenrod;
+            border-radius: 10px;
+            text-align: center;
+            padding: 20px;
+            background-color: #111;
+            box-shadow: 0 4px 6px rgba(255, 215, 0, 0.5);
+            margin-bottom: 20px; /* Add spacing between rows */
+        }
+        .box img {
+            width: 80%;
+            height: 200px; /* Set a fixed size for all images in the box */
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .box a {
+            color: goldenrod;
+            text-decoration: none;
+            font-size: 18px;
+            display: block;
+            margin-top: 10px;
+        }
+        .box a:hover {
+            text-decoration: underline;
+        }
+        .logout-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: goldenrod;
+            color: black;
+            text-decoration: none;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 35px;
+        }
+        .logout-button:hover {
+            background-color: #e6c200;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .box {
+                width: 200px;
+                height: 200px; /* Adjust size for smaller screens */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .box {
+                width: 150px;
+                height: 150px; /* Further adjust size for very small screens */
+            }
+
+            header h1 {
+                font-size: 24px; /* Reduce header font size */
+            }
+
+            header img {
+                width: 60px;
+                height: 60px; /* Reduce profile image size */
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div id="img" >
+            <img src="{% static 'admin/images/admin_profile_pic1.jpeg' %}" alt="Admin Logo">
+            <h1>Welcome Admin</h1>
+        </div>
+        <button class="logout-button" onclick="logout()">Logout</button>
+    </header>
+
+    <div class="container">
+        <div class="content">
+            {% comment %} <h2>Admin Dashboard</h2>
+            <ul>
+                <li>Total Books: {{ total_books }}</li>
+                <li>Total Authors: {{ total_authors }}</li>
+                <li>Total Genres: {{ total_genres }}</li>
+                <li>Total Membership Plans: {{ total_memberships }}</li>
+                <li>Total Subscription Plans: {{ total_subscriptions }}</li>
+            </ul> {% endcomment %}
+    
+            <div class="box-container">
+                <div class="box">
+                    <a href="{% url 'add_book' %}">
+                        <img src="{% static 'admin/images/add_book1.jpeg' %}" alt="Add Book">
+                        <p>Add To Collections</p>
+                    </a>
+                </div>
+                <div class="box">
+                    <a href="{% url 'user_info_page' %}">
+                        <img src="{% static 'admin/images/user1.png' %}" alt="User Record">
+                        <p>User Record</p>
+                    </a>
+                </div>
+                <div class="box">
+                    <a href="{% url 'book_list' %}">
+                        <img src="{% static 'admin/images/books_catalog1.jpeg' %}" alt="Books Catalog">
+                        <p>Books Catalog</p>
+                    </a>
+                </div>
+            </div>
+    
+            {% comment %} <h3>User Memberships</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>User</th>
+                        <th>Membership Plan</th>
+                        <th>Subscription Plan</th>
+                        <th>Start Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for membership in user_memberships %}
+                    <tr>
+                        <td>{{ membership.user.username }}</td>
+                        <td>{{ membership.membership_plan.name }}</td>
+                        <td>{{ membership.subscription_plan.name }}</td>
+                        <td>{{ membership.membership_start_date }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table> {% endcomment %}
+        </div>
+    </div>
+    
+
+    <script>
+        // Logout Functionality
+        function logout() {
+            alert('Logout functionality goes here.');
+        }
+    </script>
+    <script src="{% static 'admin/js/admin_home_page.js' %}"></script>
+</body>
+</html>

@@ -1,32 +1,58 @@
 from django.db import models
 import re
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.contrib.auth.models import User
 
-
-# Access Restrictions Table
-class AccessRestriction(models.Model):
-    restriction_id = models.AutoField(primary_key=True)
-    membership_type = models.CharField(max_length=255)
-    allow_bestseller = models.BooleanField()
-    allow_early_release = models.BooleanField()
-
-# Custom validator to allow both URLs and local paths
+# Validator for URLs, local file paths, and PDF filenames
 def validate_url_or_local_path(value):
-    # URL validation (basic validation to check if it's a URL)
-    url_pattern = r'^(https?://|ftp://|file://)?([a-zA-Z0-9-]+\.)+[a-zA-Z0-9]{2,6}(/[\w\-\._~:/?#[\]@!$&\'()*+,;=]*)?$'
+    # Define the regular expression patterns
+    url_pattern = r'^(https?://|ftp://|file://).+$'  # For URLs
+    local_path_pattern = r'^[a-zA-Z]:\\\\(?:[^<>:"/\\\\|?*]+\\\\)*[^<>:"/\\\\|?*]*$'  # For local file paths
+    pdf_filename_pattern = r'^.+\.pdf$'  # For PDF filenames
     
-    # Local path validation (basic check for local paths)
-    local_path_pattern = r'^[a-zA-Z0-9_\-\\\/\.:]+$'
-    
-    if not re.match(url_pattern, value) and not re.match(local_path_pattern, value):
-        raise ValidationError("Invalid URL or local path.")
+    if isinstance(value, str):  # If the value is already a string, proceed with validation
+        if not (re.match(url_pattern, value) or 
+                re.match(local_path_pattern, value) or 
+                re.match(pdf_filename_pattern, value)):
+            raise ValidationError("Invalid value. Must be a URL, a local file path, or a PDF filename.")
+    elif hasattr(value, 'url'):  # If the value is a FileField (FieldFile), access its URL
+        file_url = value.url
+        if not (re.match(url_pattern, file_url) or re.match(pdf_filename_pattern, file_url)):
+            raise ValidationError("Invalid value. Must be a URL or a PDF filename.")
+    elif hasattr(value, 'path'):  # If it's a local file, access its path
+        file_path = value.path
+        if not (re.match(local_path_pattern, file_path) or re.match(pdf_filename_pattern, file_path)):
+            raise ValidationError("Invalid value. Must be a local file path or a PDF filename.")
+    else:
+        raise ValidationError("Invalid value. Must be a URL, a local file path, or a PDF filename.")
 
+# Genre Table
+class Genre(models.Model):
+    genre_id = models.AutoField(primary_key=True)
+    genre_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.genre_name
+
+# Author Table
+class Author(models.Model):
+    author_id = models.AutoField(primary_key=True)
+    name = models.CharField(max_length=255, unique=True)
+    bio = models.TextField()
+    nationality = models.CharField(max_length=255, null=True, blank=True)  # Optional
+    birth_date = models.DateField(null=True, blank=True)  # Optional
+    death_date = models.DateField(null=True, blank=True)  # Optional
+    profile_picture = models.ImageField(upload_to='authors/', blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+# Book Table
 class Book(models.Model):
     book_id = models.AutoField(primary_key=True)
     title = models.CharField(max_length=255)
     author = models.ForeignKey('Author', on_delete=models.CASCADE)  # ForeignKey to Author
-    genre = models.CharField(max_length=255)
+    genres = models.ManyToManyField(Genre, blank=True)
     description = models.TextField(null=True, blank=True)
     published_year = models.PositiveIntegerField()
     isbn = models.CharField(max_length=13)
@@ -34,7 +60,7 @@ class Book(models.Model):
     rent_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     is_bestseller = models.BooleanField()
     is_early_release = models.BooleanField()
-    content_link = models.URLField(null=True, blank=True, validators=[validate_url_or_local_path])
+    content_link = models.FileField(max_length=500, null=True, blank=True, validators=[validate_url_or_local_path])    
     access_level = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_count = models.PositiveIntegerField(null=True, blank=True)
@@ -43,6 +69,7 @@ class Book(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
+    cover_image = models.ImageField(upload_to='books/', null=True, blank=True)  # Add image field
 
     class Meta:
         ordering = ['author']
@@ -50,50 +77,46 @@ class Book(models.Model):
     def __str__(self):
         return self.title
 
+# CatalogBookGenre Table
+class CatalogBookGenre(models.Model):
+    catalog_book_genre_id = models.AutoField(primary_key=True)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    genre = models.ForeignKey(Genre, on_delete=models.CASCADE)
 
+    def __str__(self):
+        return f"{self.book.title} - {self.genre.genre_name}"
+
+# YourModel Table
 class YourModel(models.Model):
     content_link = models.URLField(null=True, blank=True, validators=[validate_url_or_local_path])
 
-
-class Author(models.Model):
-    author_id = models.AutoField(primary_key=True)
-    name = models.CharField(max_length=255)
-    bio = models.TextField()
-    nationality = models.CharField(max_length=255, null=True, blank=True)  # Optional
-    birth_date = models.DateField(null=True, blank=True)  # Optional
-    death_date = models.DateField(null=True, blank=True)  # Optional
-    def __str__(self):
-        return self.name
-
-
-# Genre Table
-class Genre(models.Model):
-    genre_id = models.AutoField(primary_key=True)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE, related_name='genres')
-    genre_name = models.CharField(max_length=255)
-    is_early_release = models.BooleanField()
-    is_bestseller = models.BooleanField()
-
-# Subscription Plans Table
-class SubscriptionPlan(models.Model):
-    plan_id = models.AutoField(primary_key=True)
-    plan_name = models.CharField(max_length=255)
-    book_rent_limit = models.PositiveIntegerField()
-    rent_duration_week = models.PositiveIntegerField()
-
 # Cart Table
-class Cart(models.Model):
-    cart_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
-    book = models.ForeignKey(Book, on_delete=models.CASCADE)
-    date_added = models.DateField()
-    quantity = models.PositiveIntegerField()
-    status = models.CharField(max_length=50)
+# models.py in the catalog app
 
-# Rented Books Table
+from django.db import models
+from django.contrib.auth.models import User
+
+
+class Cart(models.Model):
+    id = models.AutoField(primary_key=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    status = models.CharField(max_length=50, default='active')
+
+    def __str__(self):
+        return f"Cart for {self.user.username} - {self.status}"
+
+class CartItem(models.Model):
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE, related_name='items')
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.book.title} x {self.quantity} in cart {self.cart.id}"
+
+# RentedBooks Table
 class RentedBook(models.Model):
     rental_id = models.AutoField(primary_key=True)
-    user = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     rent_start_date = models.DateField()
     rent_end_date = models.DateField()
@@ -102,7 +125,7 @@ class RentedBook(models.Model):
 # Admin Book Action Table
 class AdminBookAction(models.Model):
     action_id = models.AutoField(primary_key=True)
-    admin_id = models.ForeignKey('accounts.User', on_delete=models.CASCADE)
+    admin_id = models.ForeignKey(User, on_delete=models.CASCADE)
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     action = models.CharField(max_length=255)
     action_date = models.DateField()

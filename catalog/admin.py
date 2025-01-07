@@ -1,46 +1,41 @@
 from django.contrib import admin
-from .models import Book,Author
+from .models import Book, Author, Genre
 from django.urls import path
 from django.shortcuts import redirect
 from django.utils.html import format_html
-from .forms import BookForm,forms
+from .forms import BookForm, forms
 from django.urls import reverse
 from django.shortcuts import render, redirect
 
-
-admin.site.register(Book)
-
 @admin.register(Author)
 class AuthorAdmin(admin.ModelAdmin):
-    list_display = ('name', 'nationality', 'birth_date', 'death_date')
+    list_display = ('name', 'nationality', 'birth_date', 'death_date','profile_picture')
     search_fields = ('name', 'nationality')
 
-class BookAdmin(forms.ModelForm):
-    authors_name = forms.CharField(
-        max_length=255,
-        required=True,
-        label='Author Name',
-        widget=forms.TextInput(attrs={
-            'placeholder': 'Type author name',
-            'id': 'author-name-input'  # Add an ID for JavaScript targeting
-        })
-    )
-    class Meta:
-        model = Book
-        fields = [
-            'title', 'authors_name', 'genre', 'published_year', 'isbn', 'price', 
-            'rent_price', 'is_bestseller', 'is_early_release', 'content_link', 
-            'access_level', 'read_count', 'popularity_score', 'rating'
-        ]
+@admin.register(Book)
+class BookAdmin(admin.ModelAdmin):
+    list_display = ('title', 'author', 'get_genres', 'published_year', 'isbn', 'price','cover_image','content_link_display')  # Display genres in the list view
 
-        widgets = {
-            'published_year': forms.NumberInput(attrs={'min': 1900, 'max': 2100}),
-            'isbn': forms.TextInput(attrs={'maxlength': '20'}),
-            'price': forms.NumberInput(attrs={'step': '0.01'}),
-            'rent_price': forms.NumberInput(attrs={'step': '0.01'}),
-            'content_link': forms.URLInput(attrs={'placeholder': 'Enter the content link'}),
-            'access_level': forms.TextInput(attrs={'maxlength': '50'}),
-        }
+    def content_link_display(self, obj):
+        if obj.content_link:
+            # Create a dynamic URL to serve the PDF
+            pdf_url = reverse('serve_pdf', args=[obj.content_link.name])
+            return format_html('<a href="{}" target="_blank">Open PDF</a>', pdf_url)
+        return "No Link"
+    content_link_display.short_description = "Content Link"
+
+    # Display genres in a readable format
+    def get_genres(self, obj):
+        return ", ".join([genre.genre_name for genre in obj.genres.all()])
+    get_genres.short_description = 'Genres'
+
+    # Add the genres field to the form
+    filter_horizontal = ('genres',)  # Makes the genres field available as a filter in the admin form
+
+    def save_model(self, request, obj, form, change):
+        obj.save()
+        # Add genre handling logic if needed
+        return super().save_model(request, obj, form, change)
 
     def clean_authors_name(self):
         authors_name = self.cleaned_data.get('authors_name')
@@ -49,3 +44,10 @@ class BookAdmin(forms.ModelForm):
             if not Author.objects.filter(name=authors_name).exists():
                 raise forms.ValidationError(f"Author '{authors_name}' does not exist. Please add them first.")
         return authors_name
+
+@admin.register(Genre)
+class GenreAdmin(admin.ModelAdmin):
+    list_display = ('genre_name',)
+    search_fields = ('genre_name',)
+
+

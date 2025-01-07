@@ -1,0 +1,13 @@
+{% block content %}
+  <h2>Add Genre</h2>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <button type="submit" class="btn btn-primary">Add Genre</button>
+  </form>
+
+  <br><br>
+  <a href="{% url 'admin:catalog_genre_changelist' %}" class="btn btn-secondary">Back to Genre List</a>
+{% endblock %}

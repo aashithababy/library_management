@@ -1,1 +1,369 @@
- 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            padding-left: 20px;  /* Adds a gap on the left side of the content */
+            padding-right: 20px; /* Adds a gap on the right side of the content */
+        }
+
+        .top-buttons {
+            position: absolute;
+            width: calc(100% - 40px); 
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            left: 20px;  
+            right: 20px; 
+        }
+        
+        .top-buttons a {
+            text-decoration: none;
+            padding: 10px 20px;
+            background-color: goldenrod;
+            color: black;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .top-buttons a:hover {
+            background-color: darkgoldenrod;
+        }
+
+        .register-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
+            padding-top: 300px; 
+            padding-bottom: 300px; 
+
+        }
+
+        .register-card {
+            background-color: black;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 6px 4px goldenrod; /* Golden shadow */
+            width: 350px;
+            text-align: center;
+            border: 1px solid goldenrod;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+            color: goldenrod; /* Golden text for the heading */
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            text-align: left;
+            margin-top: 10px;
+            color: #fff;
+        }
+
+        input[type="text"],
+        input[type="password"],
+        input[type="email"],
+        select {
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 94%;
+            background-color: #fff;
+            color: #000;
+        }
+
+        button[type="submit"] {
+            padding: 10px;
+            background-color:goldenrod;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: darkgoldenrod;
+        }
+
+        .error {
+            color: red;
+            font-size: 14px;
+        }
+
+        .login-options {
+            margin-top: 15px;
+        }
+
+        .forgot-password,
+        .register-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .forgot-password:hover,
+        .register-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-buttons">
+        <a href="/" class="home-btn">Home</a>
+        <a href="javascript:history.back()" class="go-back-btn">Go Back</a>
+    </div>
+
+    <div class="register-container">
+        <div class="register-card">
+            <form method="post" id="registerForm" action="{% url 'register' %}" autocomplete="off">
+                {% csrf_token %}
+                <h2>Register</h2>
+
+                <div>
+                    <label for="username">Username:</label>
+                    <input type="text" name="username" id="username" autocomplete="off" value="{{ form.username.value|default:'' }}" placeholder="Enter your username" required>
+                    <div id="usernameError" class="error" style="display: none;">Username must contain letters or numbers only.</div>
+                    <div id="usernameMinLengthError" class="error" style="display: none;">Username must be at least 3 characters long.</div>
+                </div>
+                
+                <div>
+                    <label for="first_name">First Name:</label>
+                    <input type="text" name="first_name" id="first_name" autocomplete="off" value="{{ form.first_name.value|default:'' }}" placeholder="Enter your first name" required>
+                    <div id="firstNameError" class="error" style="display: none;">First name must contain only letters.</div>
+                    <div id="firstNameMinLengthError" class="error" style="display: none;">First name must be at least 3 characters long.</div>
+                </div>
+                
+                <div>
+                    <label for="last_name">Last Name:</label>
+                    <input type="text" name="last_name" id="last_name" autocomplete="off" value="{{ form.last_name.value|default:'' }}" placeholder="Enter your last name" required>
+                    <div id="lastNameError" class="error" style="display: none;">Last name must contain only letters.</div>
+                    <div id="lastNameMinLengthError" class="error" style="display: none;">Last name must be at least 3 characters long.</div>
+                </div>
+
+                <div>
+                    <label for="email">Email:</label>
+                    <input type="email" name="email" id="email" autocomplete="off" value="{{ form.email.value|default:'' }}" placeholder="Enter your email" required>
+                    <div id="emailError" class="error" style="display: none;">Please enter a valid email address of format (jane@gmail.com).</div>
+                    <div id="emailMinLengthError" class="error" style="display: none;">Email must be at least 5 characters long.</div>
+                </div>
+
+                <!-- Hidden role field, no dropdown displayed -->
+                <input type="hidden" name="role" value="user"> <!-- Always set the role to 'user' -->
+
+                <div>
+                    <label for="phone_number">Phone Number:</label>
+                    <input type="text" name="phone_number" id="phone_number" autocomplete="off" placeholder="Enter your phone number" required>
+                    <div id="phoneInvalidError" style="display:none; color: red;">Only numbers are allowed.</div>
+                    <div id="phoneLengthError" style="display:none; color: red;">Phone number must be 10 digits long.</div>
+                    <div id="phoneStartError" style="display:none; color: red;">Phone number must start with a digit between 7 and 9.</div>
+                </div>
+
+                <div>
+                    <label for="house_number_or_lane">House Number / Lane:</label>
+                    <input type="text" name="house_number_or_lane" id="house_number_or_lane" value="{{ form.house_number_or_lane.value|default:'' }}" placeholder="Enter house number or lane (optional)">
+                </div>
+                
+                <div>
+                    <label for="city">City:</label>
+                    <input type="text" name="city" id="city" value="{{ form.city.value|default:'' }}" placeholder="Enter your city (optional)">
+                </div>
+                
+                <div>
+                    <label for="state">State:</label>
+                    <input type="text" name="state" id="state" value="{{ form.state.value|default:'' }}" placeholder="Enter your state (optional)">
+                </div>
+                
+                <div>
+                    <label for="postal_code">Postal Code:</label>
+                    <input type="text" name="postal_code" id="postal_code" value="{{ form.postal_code.value|default:'' }}" placeholder="Enter postal code (optional)">
+                </div>
+                
+                <div>
+                    <label for="country">Country:</label>
+                    <input type="text" name="country" id="country" value="{{ form.country.value|default:'' }}" placeholder="Enter your country (optional)">
+                </div>
+
+                <div>
+                    <label for="password">Password:</label>
+                    <input type="password" name="password" id="password" autocomplete="off" placeholder="Enter a password" required>
+                    <div id="passwordLengthError" class="error" style="display: none;">Password must be at least 8 characters long.</div>
+                    <div id="passwordAlphaError" class="error" style="display: none;">Password must contain at least one alphabet.</div>
+                </div>
+
+                <div>
+                    <label for="confirm_password">Confirm Password:</label>
+                    <input type="password" name="confirm_password" id="confirm_password" autocomplete="off" placeholder="Re-enter password" required>
+                    <div id="confirmPasswordError" class="error" style="display: none;">Passwords do not match.</div>
+                </div>
+
+                <button type="submit">Register</button>
+
+                {% if form.errors %}
+                    <div class="error">
+                        <ul>
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registerForm');
+            const passwordField = document.getElementById('password');
+            const confirmPasswordField = document.getElementById('confirm_password');
+            const phoneField = document.getElementById('phone_number');
+            const phoneNumberError = document.getElementById('phoneNumberError');
+            const phoneLengthError = document.getElementById('phoneLengthError');
+            const phoneStartError = document.getElementById('phoneStartError');
+            const phoneInvalidError = document.getElementById('phoneInvalidError');
+            const usernameField = document.getElementById('username');
+            const firstNameField = document.getElementById('first_name');
+            const lastNameField = document.getElementById('last_name');
+            const emailField = document.getElementById('email');
+            const emailError = document.getElementById('emailError');
+            const emailMinLengthError = document.getElementById('emailMinLengthError');
+
+           // Email Validation
+            emailField?.addEventListener('input', function () {
+                const email = emailField.value;
+                const emailError = document.getElementById('emailError');
+                const emailMinLengthError = document.getElementById('emailMinLengthError');
+        
+                // Validate email format
+                const emailValid = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email);
+                emailError.style.display = emailValid ? 'none' : 'block';
+        
+                // Validate email minimum length
+                emailMinLengthError.style.display = email.length >= 5 ? 'none' : 'block';
+            });
+
+            // Password Validation
+            passwordField?.addEventListener('input', function () {
+                const password = passwordField.value;
+                const lengthError = document.getElementById('passwordLengthError');
+                const alphaError = document.getElementById('passwordAlphaError');
+                lengthError.style.display = password.length >= 8 ? 'none' : 'block';
+                alphaError.style.display = /[a-zA-Z]/.test(password) ? 'none' : 'block';
+            });
+
+            // Confirm Password Validation
+            confirmPasswordField?.addEventListener('input', function () {
+                const confirmPasswordError = document.getElementById('confirmPasswordError');
+                confirmPasswordError.style.display =
+                    confirmPasswordField.value === passwordField.value ? 'none' : 'block';
+            });
+
+            // Username Validation (at least 3 characters, alphanumeric)
+            usernameField?.addEventListener('input', function () {
+                const username = usernameField.value;
+                const usernameError = document.getElementById('usernameError');
+                const minLengthError = document.getElementById('usernameMinLengthError');
+                minLengthError.style.display = username.length >= 3 ? 'none' : 'block';
+                usernameError.style.display = /^[a-zA-Z0-9]+$/.test(username) && username.length >= 3 ? 'none' : 'block';
+            });
+
+            // First Name Validation (at least 3 characters, letters only)
+            firstNameField?.addEventListener('input', function () {
+                const firstName = firstNameField.value;
+                const firstNameError = document.getElementById('firstNameError');
+                const minLengthError = document.getElementById('firstNameMinLengthError');
+                minLengthError.style.display = firstName.length >= 3 ? 'none' : 'block';
+                firstNameError.style.display = /^[A-Za-z]+$/.test(firstName) && firstName.length >= 3 ? 'none' : 'block';
+            });
+
+            // Last Name Validation (at least 3 characters, letters only)
+            lastNameField?.addEventListener('input', function () {
+                const lastName = lastNameField.value;
+                const lastNameError = document.getElementById('lastNameError');
+                const minLengthError = document.getElementById('lastNameMinLengthError');
+                minLengthError.style.display = lastName.length >= 3 ? 'none' : 'block';
+                lastNameError.style.display = /^[A-Za-z]+$/.test(lastName) && lastName.length >= 3 ? 'none' : 'block';
+            });
+
+            // Phone Number Validation
+            phoneField?.addEventListener('input', function () {
+                const phoneNumber = phoneField.value;
+                
+                // Check for numeric value
+                const isNumeric = /^[0-9]+$/.test(phoneNumber);
+                const isValidLength = phoneNumber.length === 10;
+                const startsWithIndianValidDigit = /^[7-9]/.test(phoneNumber);
+                
+                // Display errors based on conditions
+                phoneInvalidError.style.display = isNumeric ? 'none' : 'block'; // Only numbers
+                phoneLengthError.style.display = isValidLength ? 'none' : 'block'; // 10 digits required
+                phoneStartError.style.display = startsWithIndianValidDigit ? 'none' : 'block'; // Starts with 7-9
+                
+                // Hide all errors if the phone number is fully valid
+                if (isNumeric && isValidLength && startsWithIndianValidDigit) {
+                    phoneNumberError.style.display = 'none';
+                } else {
+                    phoneNumberError.style.display = 'block';
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('registerForm');
+            
+            // Submit event listener for registration form
+            form?.addEventListener('submit', function (event) {
+                event.preventDefault(); // Prevent default form submission
+                
+                // You can add form validation here before triggering alert (if necessary)
+                const username = document.getElementById('username').value;
+                const email = document.getElementById('email').value;
+    
+                if (username && email) {
+                    // Trigger the alert for successful registration
+                    alert('Registration successful!');
+                    
+                    // Optionally, you can submit the form after showing the alert (if using standard form submission)
+                    form.submit();
+                } else {
+                    alert('Please fill out all required fields.');
+                }
+            });
+        });
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            {% endif %}
+        });
+
+    </script>
+</body>
+</html>

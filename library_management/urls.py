@@ -24,4 +24,10 @@ urlpatterns = [
     path('accounts/', include('accounts.urls')),
     path('catalog/', include('catalog.urls')),
     path('', include('home.urls')),
-]+ static(settings.STATIC_URL, document_root=settings.BASE_DIR / 'home' / 'static')
+]
+# Serve static files in development mode (DEBUG=True)
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+    # Serve media files in development mode (optional, if you're using media files)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

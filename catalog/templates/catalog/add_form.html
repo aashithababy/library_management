@@ -1,0 +1,41 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+
+    <form method="post" enctype="multipart/form-data" novalidate>
+        {% csrf_token %}
+        {{ form.media }}
+
+        <fieldset class="module aligned">
+            {% if is_popup %}
+                <p>
+                    This is a popup window. Close it when you're done adding the details.
+                </p>
+            {% endif %}
+
+            {% for field in form.visible_fields %}
+                <div class="form-row">
+                    <label for="{{ field.id_for_label }}">{{ field.label_tag }}{% if field.field.required %}<span class="required">*</span>{% endif %}</label>
+                    {{ field }}
+                    {% if field.help_text %}
+                        <p class="help">{{ field.help_text }}</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </fieldset>
+
+        {% for error in form.non_field_errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        <div class="submit-row">
+            <input type="submit" class="default" value="{% trans 'Save' %}">
+            {% if not is_popup %}
+                <a href="{{ return_url }}" class="button">Back to Book Form</a>
+            {% endif %}
+        </div>
+    </form>
+</div>
+{% endblock %}

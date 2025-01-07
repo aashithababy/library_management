@@ -1,0 +1,8 @@
+<!-- cart_empty.html -->
+{% extends 'base_generic.html' %}
+
+{% block content %}
+  <h1>Your Cart is Empty</h1>
+  <p>Start adding books to your cart!</p>
+  <a href="{% url 'book_list' %}">Browse Books</a>
+{% endblock %}

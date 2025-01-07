@@ -1,0 +1,131 @@
+{% load static %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <h1 class="title">Our Authors</h1>
+
+        {% for author in authors %}
+        <div class="col-md-4 col-sm-6">
+            <div class="author-card">
+                <div class="author-img">
+                    {% if author.profile_picture %}
+                        <img src="{{ author.profile_picture.url }}" alt="{{ author.name }}" class="img-fluid">
+                    {% else %}
+                        <img src="{% static 'images/default-profile.png' %}" alt="Default Author" class="img-fluid">
+                    {% endif %}
+                </div>
+
+                <div class="author-details">
+                    <h3 class="author-name">{{ author.name }}</h3>
+                    <p class="author-bio">{{ author.bio|truncatewords:20 }}</p>
+                    <p class="author-nationality"><strong>Nationality:</strong> {{ author.nationality }}</p>
+                    <p class="author-dates">
+                        {% if author.birth_date %}
+                            <strong>Born:</strong> {{ author.birth_date|date:"d M Y" }}
+                        {% endif %}
+                        {% if author.death_date %}
+                            <br><strong>Deceased:</strong> {{ author.death_date|date:"d M Y" }}
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="view-more">
+                    <a href="{% url 'author_detail' author.id %}" class="btn btn-primary">View Details</a>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <p>No authors available.</p>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .container {
+        padding: 20px;
+    }
+
+    .title {
+        text-align: center;
+        font-size: 36px;
+        color: #4b3f72;
+        margin-bottom: 30px;
+        font-weight: bold;
+    }
+
+    .author-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        transition: transform 0.3s ease;
+    }
+
+    .author-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .author-img img {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+    }
+
+    .author-details {
+        padding: 15px;
+    }
+
+    .author-name {
+        font-size: 22px;
+        color: #4b3f72;
+        font-weight: bold;
+    }
+
+    .author-bio {
+        font-size: 14px;
+        color: #555;
+        margin-top: 10px;
+    }
+
+    .author-nationality,
+    .author-dates {
+        font-size: 14px;
+        color: #777;
+        margin-top: 10px;
+    }
+
+    .view-more {
+        padding: 15px;
+        text-align: center;
+    }
+
+    .btn {
+        background-color: #6c5b7b;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        text-decoration: none;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #a57c8f;
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 767px) {
+        .author-card {
+            margin-bottom: 15px;
+        }
+
+        .title {
+            font-size: 28px;
+        }
+    }
+</style>
+
+{% endblock %}

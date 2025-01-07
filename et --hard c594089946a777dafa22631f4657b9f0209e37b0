@@ -1,0 +1,17 @@
+[33mcommit c594089946a777dafa22631f4657b9f0209e37b0[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: aashitha <aashithababy1993@gmail.com>
+Date:   Mon Dec 16 18:04:18 2024 +0530
+
+    The book adding function along with Dynamically adding author was completed
+
+[33mcommit f3ceb8510cb7f8217cc8919fa7ac1a309eacc2a0[m
+Author: aashitha <aashithababy1993@gmail.com>
+Date:   Mon Dec 16 06:14:33 2024 +0530
+
+    This is 1st commit after adding book
+
+[33mcommit afa7cf44baf878b05febc0ec699600692ff1138f[m
+Author: aashitha <aashithababy1993@gmail.com>
+Date:   Sun Dec 15 11:10:48 2024 +0530
+
+    Initial Commit for Library Management Project

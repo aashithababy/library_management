@@ -10,7 +10,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('accounts', '0001_initial'),
-        ('catalog', '0003_accessrestriction_subscriptionplan_rentedbook_and_more'),
+        
     ]
 
     operations = [

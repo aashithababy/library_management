@@ -1,0 +1,176 @@
+{% load extra_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }} - Rent Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #111;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 1000px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            color: #d4af37;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .book-cover {
+            width: 100%;
+            max-width: 300px;
+            max-height: 500px;
+            margin: 20px 0;
+            border-radius: 8px;
+        }
+
+        .book-title {
+            font-size: 1.8em;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #d4af37;
+        }
+
+        .book-author {
+            color: #aaa;
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+
+        .book-overview {
+            font-size: 1.1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .button-container {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            padding: 10px 20px;
+            background-color: #d4af37;
+            color: black;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        .button:hover {
+            background-color: #333;
+        }
+
+        .recommendations {
+            margin-top: 30px;
+        }
+
+        .recommended-book {
+            display: flex;
+            margin-bottom: 15px;
+            background-color: #333;
+            border-radius: 8px;
+            padding: 10px;
+            color: white;
+        }
+
+        .recommended-book img {
+            width: 100px;
+            height: 150px;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .recommended-book-title {
+            font-size: 1.3em;
+            color: #d4af37;
+        }
+
+        .recommended-book-author {
+            color: #aaa;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Book Cover and Details -->
+    <div class="book-cover">
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover">
+        {% else %}
+            <p>No cover image available</p>
+        {% endif %}
+
+        <div class="book-title">{{ book.title }}</div>
+        <div class="book-author">by {{ book.author.name }}</div>
+        <p><strong>Price:</strong> Rs. {{ book.price }}</p>
+
+        {% if user_membership and user_membership.is_membership_active %}
+            <p>Membership Plan: {{ user_membership.membership_plan.name }}</p>
+            <p>Discount: {{ user_membership.membership_plan.discount_percentage }}%</p>
+            <p>Final Price: Rs. {{ book.price|floatformat:2 }}</p>
+        {% else %}
+            <p>No active membership.</p>
+        {% endif %}
+
+        {% if book.rent_price %}
+            <p><strong>Rental Price:</strong> Rs. {{ book.rent_price }}</p>
+        {% else %}
+            <p>No rental price available</p>
+        {% endif %}
+
+        <p><strong>Availability:</strong> {% if book.is_available %} Available {% else %} Unavailable {% endif %}</p>
+
+        <!-- Rent Button -->
+        <div class="button-container">
+            <a href="{% url 'rent_book_action' book.id %}" class="button">Rent Now</a>
+        </div>
+    </div>
+
+    <!-- Book Overview -->
+    <div class="book-overview">
+        <p>{{ book.description }}</p>
+    </div>
+</div>
+
+<!-- Recommended Books -->
+<div class="recommendations">
+    <h2>Recommended Books</h2>
+    {% for recommended_book in recommended_books %}
+    <div class="recommended-book">
+        {% if recommended_book.cover_image %}
+            <img src="{{ recommended_book.cover_image.url }}" alt="{{ recommended_book.title }} cover">
+        {% endif %}
+        <div>
+            <div class="recommended-book-title">{{ recommended_book.title }}</div>
+            <div class="recommended-book-author">by {{ recommended_book.author.name }}</div>
+            <a href="{% url 'book_details' recommended_book.id %}" class="button">View Details</a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

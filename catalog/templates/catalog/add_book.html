@@ -1,29 +1,541 @@
-{% extends 'admin/base_site.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Book</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+        .container {
+            width: 70%;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        label {
+            font-weight: bold;
+        }
+        input, select, textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        input[type="file"] {
+            border: none;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .form-error {
+            color: red;
+            font-size: 14px;
+        }
+        .form-error ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .form-error li {
+            margin-bottom: 10px;
+        }
+        .back-btn {
+            margin-top: 20px;
+            display: inline-block;
+            background-color: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 4px;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            background-color: #5a6268;
+        }
+        .error-message {
+            color: red;
+            font-size: 12px;
+            display: none;
+        }
+        .new-author {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .add-author-icon {
+            cursor: pointer;
+            font-size: 20px;
+            color: #007bff;
+        }
+        .add-author-icon:hover {
+            color: #0056b3;
+        }
+        .author-form {
+            display: none;
+            margin-top: 15px;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .author-form input,
+        .author-form textarea {
+            width: 100%;
+        }
+        .author-form label {
+            margin-top: 10px;
+        }
+        .genre-form {
+            display: none; /* Hide the genre form initially */
+        }
+    </style>
+</head>
+<body>
 
-{% block content %}
-  <h1>Add a New Book</h1>
-  <form method="post">
-    {% csrf_token %}
+<div class="container">
+    <h1>Add New Book</h1>
+    
+    <!-- Form to Add Book -->
+    <form method="POST" enctype="multipart/form-data" id="book-form">
+        {% csrf_token %}
 
-    {{ form.as_p }}
-        <button type="submit">Save Book</button>
-  </form>
-  <script>
-document.getElementById('author-name-input').addEventListener('input', function() {
-    let authorName = this.value;
-    if (authorName.length > 2) {  // Avoid unnecessary calls for very short inputs
-        fetch(`/catalog/search-author/?name=${encodeURIComponent(authorName)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (!data.exists) {
-                    if (confirm(`Author "${authorName}" does not exist. Do you want to add this author?`)) {
-                        window.location.href = '/catalog/add-author/';
-                    }
-                }
-            })
-            .catch(error => console.error('Error:', error));
+        <!-- Title -->
+        <label for="id_title">Title:</label>
+        {{ form.title }}
+        <div class="error-message" id="title-error">Please enter a valid title.</div>
+        
+        <!-- Author (Dropdown or Add New Author) -->
+        <label for="id_author">Author:</label>
+        <select id="id_author" name="author">
+            <option value="">-- Select an Existing Author --</option>
+            {% for author in authors %}
+                <option value="{{ author.id }}">{{ author.name }}</option>
+            {% endfor %}
+        </select>
+
+        <div class="new-author">
+            <span>Or</span>
+            <span class="add-author-icon" onclick="toggleAuthorForm()">➕ Add a New Author</span>
+        </div>
+        
+        <form id="author-form" method="POST" enctype="multipart/form-data" style="display: none;">
+            {% csrf_token %}
+        <!-- Author Form (initially hidden) -->
+        <div class="form-field">
+            <label for="new_author_name">Author Name:</label>
+            <input type="text" 
+                   id="new_author_name" 
+                   name="new_author_name" 
+                   placeholder="Enter Author's Name" 
+                   required 
+                   aria-required="true" 
+                   oninput="validateAuthorField('new_author_name', 'author-name-error')" />
+            <div class="error-message" id="author-name-error" style="display: none; color: red;"></div>
+        </div>  
+        
+        <!-- Author Biography -->
+        <div class="form-field">
+            <label for="new_author_bio">Author Biography:</label>
+            <textarea id="new_author_bio" 
+                      name="new_author_bio" 
+                      placeholder="Write a short biography of the author"
+                      oninput="validateAuthorField('new_author_bio', 'author-bio-error')" 
+                      required></textarea>
+            <div class="error-message" id="author-bio-error" style="display: none; color: red;"></div>
+        </div>
+        
+        <!-- Nationality (Optional) -->
+        <div class="form-field">
+            <label for="new_author_nationality">Nationality:</label>
+            <input type="text" 
+                   id="new_author_nationality" 
+                   name="new_author_nationality" 
+                   placeholder="Enter Nationality" 
+                   oninput="validateAuthorField('new_author_nationality', 'author-nationality-error')" />
+            <div class="error-message" id="author-nationality-error" style="display: none; color: red;"></div>
+        </div>
+        
+        <!-- Birth Date (Optional) -->
+        <div class="form-field">
+            <label for="new_author_birth_date">Birth Date:</label>
+            <input type="date" 
+                   id="new_author_birth_date" 
+                   name="new_author_birth_date"  
+                   oninput="validateAuthorField('new_author_birth_date', 'author-birth-date-error')" />
+            <div class="error-message" id="author-birth-date-error" style="display: none; color: red;"></div>
+        </div>
+        
+        <!-- Death Date (Optional) -->
+        <div class="form-field">
+            <label for="new_author_death_date">Death Date:</label>
+            <input type="date" 
+                   id="new_author_death_date" 
+                   name="new_author_death_date"  
+                   oninput="validateAuthorField('new_author_death_date', 'author-death-date-error')" />
+            <div class="error-message" id="author-death-date-error" style="display: none; color: red;"></div>
+        </div>
+        
+        <!-- Profile Picture -->
+        <div class="form-field">
+            <label for="new_author_profile_picture">Profile Picture:</label>
+            <input type="file" 
+                   id="new_author_profile_picture" 
+                   name="new_author_profile_picture" 
+                   accept="image/*" 
+                   onchange="previewImage()" />
+            <div class="error-message" id="author-profile-picture-error" style="display: none; color: red;"></div>
+            <img id="profile-picture-preview" style="max-width: 100px; display: none;" />
+        </div>
+        
+        <button type="button" onclick="submitAuthorInfo()">Submit Author Information</button>
+        </form>
+        <!-- Genres (Checkboxes for Multiple Selection) -->
+        <label for="id_genres">Genres:</label>
+        <div class="checkbox-group">
+            {% for checkbox in form.genres %}
+                <div>
+                    {{ checkbox }}  
+                    <label for="{{ checkbox.id_for_label }}">{{ checkbox.choice_label }}</label>
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class="new-genre">
+            <span>Or</span>
+            <span class="add-genre-icon" onclick="toggleGenreForm()">➕ Add a New Genre</span>
+        </div>
+
+        <!-- New Genre Form -->
+        <div class="genre-form" id="genre-form">
+            <label for="new_genre_name">Genre Name:</label>
+            <input type="text" id="new_genre_name" name="new_genre_name" placeholder="Enter Genre Name" />
+        </div>
+
+        <!-- Description -->
+        <label for="id_description">Description:</label>
+        {{ form.description }}
+        <div class="error-message" id="description-error">Description must be at least 10 characters long.</div>
+        
+        <!-- Published Year -->
+        <label for="id_published_year">Published Year:</label>
+        {{ form.published_year }}
+        <div class="error-message" id="published-year-error">Please enter a valid year between 1000 and 9999.</div>
+        
+        <!-- ISBN -->
+        <label for="id_isbn">ISBN:</label>
+        {{ form.isbn }}
+        <div class="error-message" id="isbn-error">Please enter a valid ISBN (10 or 13 digits).</div>
+
+        <!-- Price -->
+        <label for="id_price">Price:</label>
+        {{ form.price }}
+        <div class="error-message" id="price-error">Please enter a valid price.</div>
+        
+        <!-- Rent Price (Optional) -->
+        <label for="id_rent_price">Rent Price:</label>
+        {{ form.rent_price }}
+        
+        <!-- Is Bestseller -->
+        <label for="id_is_bestseller">Is Bestseller:</label>
+        {{ form.is_bestseller }}
+        
+        <!-- Is Early Release -->
+        <label for="id_is_early_release">Is Early Release:</label>
+        {{ form.is_early_release }}
+        
+        <!-- Content Link (URL or File Path) -->
+        <label for="id_content_link">Content Link (URL or File Path):</label>
+        {{ form.content_link }}
+        <div class="error-message" id="content-link-error">Please enter a valid URL or local file path.</div>
+        
+        <!-- Cover Image (Optional) -->
+        <label for="id_cover_image">Cover Image (Optional):</label>
+        {{ form.cover_image }}
+        
+        <!-- Is Available -->
+        <label for="id_is_available">Is Available:</label>
+        {{ form.is_available }}
+    
+        <!-- Submit Button -->
+        <button type="submit">Add Book</button>
+    </form>
+
+    <!-- Error Handling -->
+    {% if form.errors %}
+        <div class="form-error">
+            <h3>There were errors in your submission:</h3>
+            <ul>
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                {% endfor %}
+            </ul>
+        </div>
+    {% endif %}
+    
+    <!-- Back Button -->
+    <a href="{% url 'book_list' %}" class="back-btn">Back to Book List</a>
+</div>
+
+<script>
+
+    function validateAuthorField(fieldId, errorId) {
+        const field = document.getElementById(fieldId);
+        const errorElement = document.getElementById(errorId);
+
+        // Clear previous error message
+        errorElement.style.display = 'none';
+
+        // Validate Author Name
+        if (fieldId === 'new_author_name' && !field.value.trim()) {
+            errorElement.textContent = 'Author name is required.';
+            errorElement.style.display = 'block';
+        }
+
+        // Validate Author Biography
+        if (fieldId === 'new_author_bio' && !field.value.trim()) {
+            errorElement.textContent = 'Biography is required.';
+            errorElement.style.display = 'block';
+        } else if (fieldId === 'new_author_bio' && field.value.trim().length < 10) {
+            errorElement.textContent = 'Biography must be at least 10 characters long.';
+            errorElement.style.display = 'block';
+        }
+
+        // Validate Nationality (optional)
+        if (fieldId === 'new_author_nationality' && field.value.trim() && field.value.trim().length < 2) {
+            errorElement.textContent = 'Please enter a valid nationality (at least 2 characters).';
+            errorElement.style.display = 'block';
+        }
+
+        // Validate Birth Date (optional)
+        if (fieldId === 'new_author_birth_date' && field.value && new Date(field.value) > new Date()) {
+            errorElement.textContent = 'Birth date cannot be in the future.';
+            errorElement.style.display = 'block';
+        }
+
+        // Validate Death Date (optional)
+        if (fieldId === 'new_author_death_date' && field.value) {
+            const birthDate = document.getElementById('new_author_birth_date').value;
+            if (birthDate && new Date(field.value) < new Date(birthDate)) {
+                errorElement.textContent = 'Death date cannot be earlier than birth date.';
+                errorElement.style.display = 'block';
+            }
+        }
+
+        // Validate Profile Picture
+        if (fieldId === 'new_author_profile_picture' && !field.files.length) {
+            errorElement.textContent = 'Profile picture is required.';
+            errorElement.style.display = 'block';
+        }
     }
-});
-</script>
+
+    function previewImage() {
+        const fileInput = document.getElementById('new_author_profile_picture');
+        const preview = document.getElementById('profile-picture-preview');
+        const file = fileInput.files[0];
+    
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        } else {
+            preview.src = '';
+            preview.style.display = 'none';
+        }
+    }
+    function toggleAuthorForm() {
+        var authorForm = document.getElementById("author-form");
+        if (authorForm) {
+            authorForm.style.display = (authorForm.style.display === "none" || authorForm.style.display === "") 
+                ? "block" 
+                : "none";
+        } else {
+            console.error("Element with ID 'author-form' not found.");
+        }
+    }
   
-{% endblock %}
+    document.getElementById('id_title').addEventListener('input', function() {
+        checkValidity(this, 'title-error');
+    });
+    document.getElementById('id_description').addEventListener('input', function() {
+        checkValidity(this, 'description-error');
+    });
+    document.getElementById('id_published_year').addEventListener('input', function() {
+        checkValidity(this, 'published-year-error');
+    });
+    document.getElementById('id_isbn').addEventListener('input', function() {
+        checkValidity(this, 'isbn-error');
+    });
+    document.getElementById('id_price').addEventListener('input', function() {
+        checkValidity(this, 'price-error');
+    });
+    document.getElementById('id_content_link').addEventListener('input', function() {
+        checkValidity(this, 'content-link-error');
+    });
+
+    
+    // Function to handle adding a new author
+    function submitAuthorInfo() {
+        let isValid = true;
+    
+        const fields = [
+            { id: 'new_author_name', errorId: 'author-name-error' },
+            { id: 'new_author_bio', errorId: 'author-bio-error' }
+        ];
+    
+        fields.forEach(field => {
+            validateAuthorField(field.id, field.errorId);
+            const errorElement = document.getElementById(field.errorId);
+            if (errorElement.style.display === 'block') {
+                isValid = false;
+            }
+        });
+    
+        if (isValid) {
+            // Prepare the data
+            const data = new FormData();
+            data.append('new_author_name', document.getElementById('new_author_name').value);
+            data.append('new_author_bio', document.getElementById('new_author_bio').value);
+            data.append('new_author_nationality', document.getElementById('new_author_nationality').value);
+            data.append('new_author_birth_date', document.getElementById('new_author_birth_date').value);
+            data.append('new_author_death_date', document.getElementById('new_author_death_date').value);
+            data.append('new_author_profile_picture', document.getElementById('new_author_profile_picture').files[0]);
+            data.append('csrfmiddlewaretoken', '{{ csrf_token }}');
+
+            fetch("{% url 'add_author' %}", {
+                method: 'POST',
+                body: data
+            }).then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Author added successfully!');
+                    console.log("Form Data:", data);
+                    location.reload();  // Reload page to update dropdown
+                } else {
+                    alert('Error adding author.');
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    }    
+    
+    // Function to check input validity
+    function checkValidity(input, errorMessageId) {
+        const errorMessage = document.getElementById(errorMessageId);
+        if (!input.checkValidity()) {
+            errorMessage.style.display = "block";
+        } else {
+            errorMessage.style.display = "none";
+        }
+    }
+    
+    function toggleGenreForm() {
+        var genreForm = document.getElementById("genre-form");
+        if (genreForm.style.display === "none" || genreForm.style.display === "") {
+            genreForm.style.display = "block";  // Show the form
+        } else {
+            genreForm.style.display = "none";   // Hide the form
+        }
+    }
+    
+    
+    // Function for AJAX validation of fields
+    document.getElementById('book-form').addEventListener('submit', function (event) {
+        let isValid = true;
+    
+        // Title Validation
+        const title = document.getElementById('id_title');
+        const titleError = document.getElementById('title-error');
+        if (!title.value.trim()) {
+            titleError.style.display = 'block';
+            isValid = false;
+        } else {
+            titleError.style.display = 'none';
+        }
+    
+        // Author Validation (Existing Author or New Author)
+        const author = document.getElementById('id_author');
+        const newAuthorName = document.getElementById('new_author_name');
+        const authorNameError = document.getElementById('author-name-error');
+        if (!author.value && !newAuthorName.value.trim()) {
+            authorNameError.style.display = 'block';
+            isValid = false;
+        } else {
+            authorNameError.style.display = 'none';
+        }
+    
+        // Author Biography Validation (Only if New Author Name is provided)
+        const authorBio = document.getElementById('new_author_bio');
+        const authorBioError = document.getElementById('author-bio-error');
+        if (newAuthorName.value.trim() && !authorBio.value.trim()) {
+            authorBioError.style.display = 'block';
+            isValid = false;
+        } else {
+            authorBioError.style.display = 'none';
+        }
+    
+        // Nationality Validation (Only if New Author Name is provided)
+        const nationality = document.getElementById('new_author_nationality');
+        const nationalityError = document.getElementById('author-nationality-error');
+        if (newAuthorName.value.trim() && !nationality.value.trim()) {
+            nationalityError.style.display = 'block';
+            isValid = false;
+        } else {
+            nationalityError.style.display = 'none';
+        }
+    
+        // Birth Date Validation (Only if New Author Name is provided)
+        const birthDate = document.getElementById('new_author_birth_date');
+        const birthDateError = document.getElementById('author-birth-date-error');
+        if (newAuthorName.value.trim() && !birthDate.value.trim()) {
+            birthDateError.style.display = 'block';
+            isValid = false;
+        } else {
+            birthDateError.style.display = 'none';
+        }
+    
+        // Profile Picture Validation (Optional but can check if a new author is added)
+        const profilePicture = document.getElementById('new_author_profile_picture');
+        const profilePictureError = document.getElementById('author-profile-picture-error');
+        if (newAuthorName.value.trim() && !profilePicture.files.length) {
+            profilePictureError.style.display = 'block';
+            isValid = false;
+        } else {
+            profilePictureError.style.display = 'none';
+        }
+    
+        // Prevent form submission if validation fails
+        if (!isValid) {
+            event.preventDefault();
+        }
+    });
+    
+    
+</script>
+</body>
+</html>

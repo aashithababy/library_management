@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> </title>
+  </head>
+  <body>
+    <h1>Payment Successful</h1>
+        <p>Your payment has been successfully processed.</p>
+        <p><strong>Membership Plan:</strong> {{ user_membership.membership_plan.name }}</p>
+        <p><strong>Subscription Plan:</strong> {{ user_membership.subscription_plan.name }}</p>
+        <p><strong>Membership ID:</strong> {{ user_membership.membership_id }}</p>
+        <p><strong>Subscription ID:</strong> {{ user_membership.subscription_id }}</p>
+        <a href="{% url 'dashboard' %}">Go to Dashboard</a>
+  </body>
+</html>

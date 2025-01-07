@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management</title>
+    <style>
+        body {
+            background-color: #000;
+            color: #ffd700;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #333;
+            padding: 20px;
+            text-align: center;
+            border-bottom: 2px solid #ffd700;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 2rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #111;
+            border-radius: 10px;
+            border: 2px solid #ffd700;
+            box-shadow: 0 0 10px 2px #ffd700;
+        }
+        .table-container {
+            overflow-x: auto;
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        table th, table td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #ffd700;
+        }
+        table th {
+            background-color: #333;
+        }
+        table td {
+            background-color: #222;
+        }
+        .button {
+            display: inline-block;
+            padding: 10px 20px;
+            margin: 5px;
+            color: #000;
+            background-color: #ffd700;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .button:hover {
+            background-color: #ffaa00;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ffd700;
+            border-radius: 5px;
+            background-color: #222;
+            color: #ffd700;
+        }
+        input[type="submit"] {
+            width: auto;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>User Management Dashboard</h1>
+    </header>
+    <div class="container">
+        <h2>Manage Users</h2>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Role</th>
+                        <th>Address</th>
+                        <th>Phone</th>
+                        <th>Membership</th>
+                        <th>Subscription</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Example row -->
+                    <tr>
+                        <td>JohnDoe</td>
+                        <td>Admin</td>
+                        <td>123 Main St, New York, NY</td>
+                        <td>+1 123-456-7890</td>
+                        <td>Gold Plan</td>
+                        <td>Platinum Subscription</td>
+                        <td>
+                            <a href="#" class="button">Edit</a>
+                            <a href="#" class="button">Delete</a>
+                            <a href="#" class="button">View Details</a>
+                        </td>
+                    </tr>
+                    <!-- Repeat for other users -->
+                </tbody>
+            </table>
+        </div>
+        <h2>Add New User</h2>
+        <form action="#" method="POST">
+            <div class="form-group">
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Role:</label>
+                <select id="role" name="role">
+                    <option value="admin">Admin</option>
+                    <option value="user">User</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="address">Address:</label>
+                <textarea id="address" name="address" rows="3"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone Number:</label>
+                <input type="text" id="phone" name="phone" required>
+            </div>
+            <div class="form-group">
+                <label for="membership">Membership Plan:</label>
+                <select id="membership" name="membership">
+                    <option value="basic">Basic</option>
+                    <option value="gold">Gold</option>
+                    <option value="platinum">Platinum</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="subscription">Subscription Plan:</label>
+                <select id="subscription" name="subscription">
+                    <option value="basic">Basic</option>
+                    <option value="gold">Gold</option>
+                    <option value="platinum">Platinum</option>
+                </select>
+            </div>
+            <input type="submit" class="button" value="Add User">
+        </form>
+    </div>
+</body>
+</html>

@@ -1,1 +1,164 @@
- 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Book List</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: black;
+        }
+        h1 {
+            color: goldenrod;
+            text-align: center;
+        }
+        .search-container {
+            display: flex; /* Aligns items horizontally */
+            justify-content: center; /* Centers the search bar and icon horizontally */
+            align-items: center; /* Aligns items vertically */
+            margin-bottom: 20px;
+        }
+        
+        .search-bar {
+            flex: 1; /* Allows the search bar to take up available space */
+            max-width: 500px; /* Ensures a reasonable maximum width */
+            padding: 10px;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px 0 0 5px; /* Rounded corners on the left */
+        }
+        
+        .search-icon-container {
+            background-color: #333; /* Icon container background color */
+            padding: 10px;
+            border-radius: 0 5px 5px 0; /* Rounded corners on the right */
+            display: flex;
+            align-items: center; /* Centers the icon vertically */
+            justify-content: center; /* Centers the icon horizontally */
+        }
+        
+        .search-icon {
+            font-size: 20px; /* Adjust icon size */
+            color: white; /* Icon color */
+        }
+
+        .bestsellers-section {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+        .book-frame {
+            width: 150px; /* Reduced width */
+            padding: 10px; /* Reduced padding */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(1, 1, 1, 0.2);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        .book-frame:hover {
+            transform: translateY(-5px);
+        }
+        .book-frame img {
+            width: 100%;
+            height: 150px; /* Reduced height */
+            border-radius: 8px;
+        }
+        .book-title {
+            font-size: 14px; /* Smaller font size */
+            font-weight: bold;
+            margin: 5px 0; /* Reduced margin */
+            color: #333;
+        }
+        .book-author {
+            font-size: 12px; /* Smaller font size */
+            color: #777;
+            margin-bottom: 5px; /* Reduced margin */
+        }
+        .btn {
+            background-color: #333;
+            color: #fff;
+            padding: 10px 20px; /* Restored larger size */
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px; /* Restored larger font size */
+        }
+        .btn:hover {
+            background-color: #444;
+        }
+        .back-home {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px; /* Reduced padding for a smaller button */
+            background-color: goldenrod !important; /* Ensure the background is goldenrod */
+            color: black !important; /* Ensure the text color is black */
+            text-decoration: none; /* Removes underline */
+            border-radius: 5px; /* Rounded corners */
+            font-weight: bold; /* Bold text */
+            font-size: 14px; /* Smaller font size */
+            text-align: center; /* Centers text inside the button */
+            display: inline-block; /* Ensures proper button styling */
+        }
+    </style>
+</head>
+<body>
+    <!-- Back to Home Button -->
+    <div class="back-home">
+        <a href="/" class="btn">Back to Home</a>
+    </div>
+
+    <div class="container">
+        <h1>List of Books</h1>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <form method="get" action="{% url 'book_list' %}" style="display: flex; width: 100%; max-width: 600px;">
+                <input type="text" name="q" placeholder="Search Title, Author, Keyword..." class="search-bar" id="searchInput" value="{{ request.GET.q }}">
+                <button type="submit" class="search-icon-container">
+                    <i class="fas fa-search search-icon"></i>
+                </button>
+            </form>
+        </div>
+
+        <!-- Book List -->
+        <div class="bestsellers-section">
+            {% for book in books %}
+                <div class="book-frame">
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+                    {% else %}
+                        <img src="/static/images/default_cover.jpg" alt="No cover image">
+                    {% endif %}
+                    <h3 class="book-title">{{ book.title }}</h3>
+                    <p class="book-author">Author: {{ book.author.name }}</p>
+                    <p class="book-author">Published: {{ book.published_year }}</p>
+                    <p class="book-author">Price: Rs {{ book.price }}</p>
+                    <a href="{% url 'book_detail' book.pk %}" class="btn">More Details</a>
+                </div>
+            {% empty %}
+                <p>No books found matching your search.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

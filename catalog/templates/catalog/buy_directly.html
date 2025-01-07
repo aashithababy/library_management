@@ -1,0 +1,167 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Book Directly</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f7f7f7;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .book-details {
+            background-color: #222;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+            margin: 50px auto;
+            max-width: 800px;
+        }
+
+        table {
+            width: 100%;
+            color: #f7f7f7;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            font-size: 20px;
+            color: #ffd700;
+        }
+
+        .book-title {
+            font-size: 28px;
+            color: #ffd700;
+        }
+
+        .book-author, .book-price {
+            color: #f7f7f7;
+        }
+
+        .price {
+            font-size: 24px;
+            color: #ffd700;
+        }
+
+        .discounted-price {
+            font-size: 24px;
+            color: #ffcc00;
+            text-decoration: line-through;
+        }
+
+        .buy-now-btn {
+            background-color: #ffd700;
+            color: #222;
+            font-size: 18px;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        .buy-now-btn:hover {
+            background-color: #e6c200;
+        }
+
+        .back-home {
+            text-align: right;
+            margin-top: 20px;
+        }
+
+        .back-home a {
+            color: #ffd700;
+            font-size: 18px;
+            text-decoration: none;
+        }
+
+        .back-home a:hover {
+            color: #ffcc00;
+        }
+
+        .book-cover {
+            max-width: 150px;
+            max-height: 200px;
+            object-fit: cover;
+        }
+        .back-button {
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #ff6347;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #e53e2f;
+        }
+    </style>
+</head>
+<body>
+    <div class="container book-details">
+        <h1 class="book-title">{{ book.title }}</h1>
+        <table>
+            <tr>
+                <td>
+                    {% if book.cover_image %}
+                        <img src="{{ book.cover_image.url }}" alt="Cover Image" class="book-cover">
+                    {% else %}
+                        <p>No cover image available</p>
+                    {% endif %}
+                </td>
+            </tr>
+            <tr>
+                <th>Author</th>
+                <td>{{ book.author.name }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ book.description }}</td>
+            </tr>
+            <tr>
+                <th>Price</th>
+                <td>
+                    {% if discounted_price < book.price %}
+                        <span class="discounted-price">Rs {{ book.price }}</span>
+                        <span class="price">Rs {{ discounted_price }}</span>
+                    {% else %}
+                        <span class="price">Rs {{ discounted_price }}</span>
+                    {% endif %}
+                </td>
+            </tr>
+        </table>
+
+        {% if membership_plan %}
+            <p class="text-white">Your Membership Plan: {{ membership_plan.name }} ({{ membership_plan.discount_percentage }}% discount)</p>
+        {% else %}
+            <p class="text-white">You are not subscribed to any membership plan.</p>
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <button type="submit" class="buy-now-btn">Buy Now</button>
+        </form>
+
+        <div class="back-home">
+            <a href="/">Back to Home</a>
+            <button class="back-button" onclick="window.history.back()">Back to Previous Page</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

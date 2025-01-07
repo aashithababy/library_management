@@ -1,1 +1,241 @@
- 
+{% load extra_filters %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ book.title }} - Book Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: black;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            display: flex;
+            max-width: 800px;
+            background-color: black;
+            margin: auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px goldenrod;
+        }
+
+        h1 {
+            color: #4caf50;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .book-cover {
+            width: 100%;
+            max-width: 300px;
+            max-height: 500px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px goldenrod;
+        }
+
+        .book-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .book-author {
+            color: #777;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+        }
+
+        .book-overview {
+            font-size: 1em;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            
+        }
+
+        /* Style for buttons */
+        .button-container, .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        /* Style for each button */
+        .button-container .button, .actions .btn {
+            padding: 10px 20px;
+            background-color:goldenrod; /* Green background */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s;
+            white-space: nowrap; /* Prevent button text from wrapping */
+            flex: 1; /* Ensure buttons take equal width */
+            box-shadow: 0 2px 10px goldenrod;
+        }
+
+        /* Hover effect for buttons */
+        .button-container .button:hover, .actions .btn:hover {
+            background-color: #333;  /* Darker shade when hovered */
+        }
+
+        /* Book Cover and Overview */
+        Book_Cover {
+            width: 40%;
+            padding: 20px;
+            box-shadow: 0 2px 10px goldenrod;
+        }
+
+        Book_Overview {
+            width: 60%;
+            padding: 20px;
+            background-color: black;
+            color: white;
+            text-align: justify;
+            font-size: 16px;
+        }
+
+        Book_Overview p {
+            font-style: italic;
+            font-size: 16px;
+        }
+        #homeButton {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+        
+        #homeButton:hover {
+            background-color:rgb(115, 82, 0); /* Darker goldenrod shade for hover effect */
+        }
+        
+    </style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+
+<div class="container">
+    <Book_Cover>
+        {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" alt="{{ book.title }} cover" class="book-cover">
+        {% else %}
+            <p>No cover image available</p>
+        {% endif %}
+
+        <div class="book-title">{{ book.title }}</div>
+        <div class="book-author">by {{ book.author.name }}</div>
+        <p>Price: Rs. {{ book.price }}</p>
+
+        {% if user_membership and user_membership.is_membership_active %}
+            <p>Membership Plan: {{ user_membership.membership_plan.name }}</p>
+            <p>Discount: {{ user_membership.membership_plan.discount_percentage }}%</p>
+            <p>Final Price: Rs. {{ book.price|floatformat:2 }}</p>
+        {% else %}
+            <p>No active membership.</p>
+        {% endif %}
+
+        {% if user_membership and user_membership.is_subscription_active %}
+            <p>Subscription Plan: {{ user_membership.subscription_plan.name }}</p>
+            <p>Max Books Rented: {{ user_membership.subscription_plan.max_books_rented }}</p>
+            <p>Rent Duration: {{ user_membership.subscription_plan.rent_duration_weeks }} weeks</p>
+        {% endif %}
+
+        {% if book.rent_price %}
+            <p><strong>Rental Price:</strong> Rs. {{ book.rent_price }}</p>
+        {% else %}
+            <p>No rental price available</p>
+        {% endif %}
+
+        <p><strong>Availability:</strong> 
+            {% if book.is_available %} Available {% else %} Unavailable {% endif %}
+        </p>
+        <br>
+
+        <div class="button-container">
+            
+            <a href="{% url 'rent_book' book.book_id %}" class="button">
+                <i class="fa fa-book" style="font-size:24px;"></i> Rent
+            </a>
+    
+            <a href="{% url 'buy_book' book.book_id %}" class="button">
+                <i class="fa fa-shopping-bag" style="font-size:24px;"></i> Buy Now
+            </a>
+        </div>
+        
+        <!-- Add to Cart button -->
+        <div class="actions">
+                {% if book.is_available %}
+                    <a href="javascript:void(0);" class="btn btn-primary" onclick="addToCartAlert()">
+                        <i style="font-size:24px" class="fa">&#xf07a;</i> Add to Cart
+                    </a>
+                {% else %}
+                    <p>This book is currently unavailable.</p>
+                {% endif %}
+        </div>
+
+    </Book_Cover>
+
+    <Book_Overview>
+        <div class="book-overview">
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <a href="{% url 'home_page' %}" class="button" id="homeButton">Back to Home Page</a>
+            {% for paragraph in paragraphs %}
+                <p>{{ paragraph }}</p>
+            {% endfor %}
+        </div>
+    </Book_Overview>
+</div>
+
+<script>
+    // Event listener for the home button
+    const homeButton = document.getElementById("homeButton");
+    homeButton.addEventListener("click", function () {
+        window.location.href = "{% url 'home_page' %}"; // Adjust this URL to your home page route
+    });
+
+    function addToCartAlert() {
+        // Send AJAX request to add the book to the cart
+        fetch("{% url 'add_to_cart' book.pk %}", {
+            method: "GET"
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Check if the request was successful
+            if (data.status === 'success') {
+                alert(data.message);  // Show the success message
+
+                // Reload the page to reflect updated cart information
+                location.reload();  // Reload the current page (book detail page) to show updated cart
+
+            } else {
+                alert("Error adding book to cart.");
+            }
+        })
+        .catch(error => {
+            alert("Error adding book to cart.");
+            console.log(error);
+        });
+    }
+</script>
+
+</body>
+</html>

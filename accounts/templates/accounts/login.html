@@ -1,1 +1,141 @@
- 
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            background-size: cover;
+            background-attachment: fixed;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+        }
+        .login-card {
+            background-color: black; /* Black color for the card */
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid goldenrod;
+            box-shadow: 0 0 6px 4px goldenrod; /* Golden shadow for the card */
+            width: 350px;
+            text-align: center;
+        }
+        h2 {
+            font-size: 28px;
+            color: goldenrod;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            text-align: left;
+            margin-top: 10px;
+            color: #fff;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 94%;
+            background-color: #1e2124;
+            color: #fff;
+        }
+        button[type="submit"] {
+            padding: 10px;
+            background-color: goldenrod;
+            color: black;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button[type="submit"]:hover {
+            background-color: darkgoldenrod;
+        }
+        .login-options {
+            margin-top: 15px;
+        }
+        .forgot-password,
+        .register-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 16px;
+        }
+        .forgot-password:hover,
+        .register-link:hover {
+            text-decoration: underline;
+        }
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background-color: goldenrod;
+            color: black;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .back-btn:hover {
+            background-color: darkgoldenrod;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-btn">Back to Home</a>
+    <div class="login-container">
+        <div class="login-card">
+            <form id="loginForm" method="post">
+                {% csrf_token %}
+                <h2>Login</h2>
+                <label for="login">Email or Username:</label>
+                <input type="text" name="login" required><br>
+                <label for="password">Password:</label>
+                <input type="password" name="password" required><br>
+                <button type="submit">Login</button>
+                <div class="login-options">
+                    <a href="#" class="forgot-password">Forgot Password?</a>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="{% url 'register' %}" class="register-link">Register</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            {% if messages %}
+                {% for message in messages %}
+                    alert("{{ message }}");
+                {% endfor %}
+            {% endif %}
+            const form = document.getElementById('loginForm');
+            form?.addEventListener('submit', function (event) {
+                const email = form.querySelector('input[name="login"]').value;
+                const password = form.querySelector('input[name="password"]').value;
+                if (!email || !password) {
+                    alert("Please fill out both email and password fields.");
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
