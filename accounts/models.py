@@ -135,3 +135,29 @@ class UserMembership(models.Model):
             end_date = self.subscription_start_date + relativedelta(months=self.subscription_plan.duration_months)
             return date.today() <= end_date
         return False
+    
+from django.db import models
+from django.contrib.auth.models import User
+from catalog.models import Book
+from .models import Order, SubscriptionPlan, MembershipPlan
+
+class Invoice(models.Model):
+    TRANSACTION_CHOICES = [
+        ('purchase', 'Book Purchase'),
+        ('rental', 'Book Rental'),
+        ('subscription', 'Subscription'),
+        ('membership', 'Membership'),
+    ]
+
+    invoice_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="invoices")
+    transaction_type = models.CharField(max_length=20, choices=TRANSACTION_CHOICES)
+    order = models.OneToOneField(Order, on_delete=models.CASCADE, null=True, blank=True)
+    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)  # For rentals
+    subscription_plan = models.ForeignKey(SubscriptionPlan, on_delete=models.SET_NULL, null=True, blank=True)
+    membership_plan = models.ForeignKey(MembershipPlan, on_delete=models.SET_NULL, null=True, blank=True)
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Invoice {self.invoice_id} - {self.transaction_type} for {self.user.username}"

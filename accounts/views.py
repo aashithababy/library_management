@@ -2,7 +2,7 @@ import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from catalog.models import Book
-from .models import OrderItem, UserMembership
+from .models import Invoice, OrderItem, UserMembership
 from django.http import HttpResponseForbidden
 
 from django.shortcuts import render
