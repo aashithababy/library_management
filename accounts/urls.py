@@ -1,12 +1,15 @@
 from django.urls import path
 from . import views
+from django.contrib.auth.views import LogoutView
+
 
 urlpatterns = [
     path("register/", views.register, name="register"),
     path('', views.home, name='home_page'),
     path("login/", views.user_login, name="login"),
     path("logout/", views.user_logout, name="logout"),
-     path('admin/dashboard/', views.admin_home_page, name='admin_home_page'),
+    path('accounts/logout/', LogoutView.as_view(next_page='/accounts/login/'), name='logout'),
+    path('admin/dashboard/', views.admin_home_page, name='admin_home_page'),
     path('redirect_membership/', views.redirect_membership, name='redirect_membership'),
     path('redirect_subscription/', views.redirect_subscription, name='redirect_subscription'),
     path('membership_plans/', views.membership_plans, name='membership_plans'),
@@ -19,9 +22,13 @@ urlpatterns = [
     path('return-book/<int:book_id>/', views.return_book, name='return_book'),
     path('choose-payment/', views.choose_payment, name='choose_payment'),
     path('process_payment/', views.process_payment, name='process_payment'),
-    path('payment_success/', views.payment_success, name='payment_success_page'),
+    path('payment_success/<int:order_id>/', views.payment_success, name='payment_success_page'),
     path('payment_failure/', views.payment_failure, name='payment_failure_page'),
     path('user-info/', views.user_info_page, name='user_info_page'),
     path('update-user/<int:user_id>/', views.update_user, name='update_user'),
     path('delete-user/<int:user_id>/', views.delete_user, name='delete_user'),
+    path('user-info/', views.user_info_page, name='user_info_page'),
+    path('user/<int:user_id>/', views.user_profile, name='user_profile'),
+    path('user/<int:user_id>/edit/', views.edit_user_profile, name='edit_user_profile'),
+    path('order/<int:order_id>/details/', views.view_order_details, name='view_order_details'),
 ]

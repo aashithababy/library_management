@@ -9,24 +9,75 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'falling_stars.css' %}">
+    <script src="{% static 'falling_stars.js' %}"></script>
     <style>
         .fancy-welcome {
-            font-family:Arial, Helvetica, sans-serif;
-            color: green;
-            font-size: 14px;
+            font-family: 'Dancing Script', cursive;
+            color: goldenrod;
+            font-size: 50px;
             font-weight: bold;
-            text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-shadow: 0 0 2px #ffd700, /* Faint glow */
+                 0 0 4px #ffcc00; 
+            animation: flicker 2s infinite alternate;       }
+
+            @keyframes flicker {
+                0% { text-shadow: 0 0 2px #ffd700; }
+                50% { text-shadow: 0 0 4px #ffcc00; }
+                100% { text-shadow: 0 0 2px #ffd700; }
+            }
+        
+            .fancy-user {
+                font-family: 'Dancing Script', cursive;
+                color: goldenrod;
+                font-size: 20px;
+                font-weight: bold;
+                text-shadow: 0 0 2px #ffd700, /* Faint glow */
+                     0 0 4px #ffcc00; 
+                animation: flicker 2s infinite alternate;       }
+
+        /* Glowing golden stars animation styling */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .star {
+            position: absolute;
+            background: radial-gradient(circle,rgb(255, 255, 255),rgb(193, 193, 193));
+            border-radius: 50%;
+            opacity: 0.9;
+            box-shadow: 0 0 8px rgba(255, 215, 0, 0.8);
+            animation: glowing-stars linear infinite;
+        }
+
+        @keyframes glowing-stars {
+            from {
+                transform: translateY(0px);
+            }
+            to {
+                transform: translateY(100vh);
+            }
         }
     </style>
 
 </head>
 <body>
+    <div class="stars"></div>
     <div class="navbar-container">
         <div class="navbar-top">
             <div class="row">
             {% if user.is_authenticated %}
             <!-- Show this for logged-in users -->
-            <span class="fancy-welcome">{{ user.username|upper }}</span>&nbsp;&nbsp;
+            <span class="fancy-user">{{ user.username|upper }}</span>&nbsp;&nbsp;
             <a href="/User/HTML/Newspaper.html">Newspapers📰</a>&nbsp;
             <a href="/User/HTML/Bestsellers.html">Bestsellers</a>&nbsp;
             <a href="/User/HTML/Magazine.html">Magazines📔</a>&nbsp;
@@ -39,8 +90,9 @@
             <a href="{% url 'redirect_subscription' %}" class="join">
                 <span style="font-style: italic;">Subscription</span>
             </a>
+            <a href="{% url 'user_profile' user.id %}" class="btn btn-golden">My Profile</a>
             {% else %}
-            <a href="{% url 'admin_dashboard' %}">Admin Login</a>&nbsp;&nbsp
+            <a href="{% url 'admin_home_page' %}">Admin Login</a>&nbsp;&nbsp
             <a href="/User/HTML/Newspaper.html">Newspapers📰</a>&nbsp&nbsp
             <a href="/User/HTML/Bestsellers.html">Bestsellers</a>&nbsp&nbsp
             <a href="/User/HTML/Magazine.html">Magazines📔</a>&nbsp&nbsp
@@ -58,19 +110,29 @@
         </div>
         <div class="row">
             <div class="logo-container">
-                <span class="logo-text">Library Management System</span>
-                <span class="logo-icon">🎄</span>
+                <div style="display: inline-flex; align-items: center;justify-content: center;padding-top: 0px;">
+               &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <span class="logo-text fancy-welcome">Library Management System</span>&nbsp;&nbsp;&nbsp;
+                    <img src="{% static 'images/book icon.webp' %}" 
+                         alt="Book Icon" 
+                         style="width: 60px; height: 60px; margin-left: 10px; border-radius: 50%;">
+                </div>
+                
             </div>
-        </div>
         </div>
     </div>
 
-      <!-- Categories Navigation -->
-      <div class="categories">
-        {% for category, books in books_by_category.items %}
-            <a href="#{{ category }}">{{ category|upper }}</a>
-        {% endfor %}
+     <!-- Categories Navigation -->
+    <div class="categories">
+        <a href="{% url 'genre_books' genre_name='THRILLER' %}">THRILLER</a>
+        <a href="{% url 'genre_books' genre_name='HISTORICAL' %}">HISTORICAL</a>
+        <a href="{% url 'genre_books' genre_name='HORROR' %}">HORROR</a>
+        <a href="{% url 'genre_books' genre_name='FANTASY' %}">FANTASY</a>
+        <a href="{% url 'genre_books' genre_name='MYSTERY' %}">MYSTERY</a>
+        <a href="{% url 'genre_books' genre_name='COMIC' %}">COMIC</a>
+        <a href="{% url 'genre_books' genre_name='NONFICTION' %}">NONFICTION</a>
     </div>
+
 <br>
     <!-- Search Bar -->
     <div class="search-container">
@@ -253,5 +315,28 @@
     <script src="{% static 'home/Home_page.js' %}"></script>
 
     {% endif %}
+
+    <script>
+        const starsContainer = document.querySelector('.stars');
+
+        function createStar() {
+            const star = document.createElement('div');
+            star.classList.add('star');
+
+            const size = Math.random() * 5 + 2;
+            star.style.width = `${size}px`;
+            star.style.height = `${size}px`;
+            star.style.left = `${Math.random() * 100}vw`;
+            star.style.animationDuration = `${Math.random() * 5 + 3}s`;
+
+            starsContainer.appendChild(star);
+
+            setTimeout(() => {
+                star.remove();
+            }, (Math.random() * 5 + 3) * 1000);
+        }
+
+        setInterval(createStar, 100);
+    </script>
 </body>
 </html>

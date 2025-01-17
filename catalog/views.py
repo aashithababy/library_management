@@ -60,36 +60,47 @@ def book_detail(request, pk):
 
 @login_required
 def add_book(request):
-    authors = Author.objects.all()
-    if request.method == "POST":
-        book_form = BookForm(request.POST,request.FILES)
-        author_form = AuthorForm(request.POST, request.FILES)
-        if book_form.is_valid() and author_form.is_valid():
-            # Save the author and set session data for confirmation
-            new_author = author_form.save()
-            request.session['new_author_name'] = new_author.name  # Store in session
-            # Save the book and associate it with the author
-            book = book_form.save(commit=False)
-            book.author = new_author
-            book.save()
-            return redirect('confirm_add_author')  # Redirect to author confirmation page
-        else:
-            # Handle invalid form (add appropriate error handling)
-            return render(request, 'catalog/add_book.html', {'form': book_form, 'author_form': author_form, 'authors': authors})
+    book_form_data = request.session.get('book_form_data', None)
 
+    if request.method == 'POST':
+        form = BookForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+            # Clear the stored session data after successful save
+            if 'book_form_data' in request.session:
+               del request.session['book_form_data']
+
+            return redirect('book_list')
     else:
-        book_form = BookForm()
-        author_form = AuthorForm()
+        form = BookForm(initial=book_form_data if book_form_data else {})
 
-    return render(request, 'catalog/add_book.html', {
-        'form': book_form,
-        'authors': authors,
-        'author_form': author_form,
-    })
+    return render(request, 'catalog/add_book.html', {'form': form})
+
+from django.http import JsonResponse
+from .forms import BookForm
+
+
+def validate_form(request):
+    if request.method == 'POST' and request.is_ajax():
+        form = BookForm(request.POST)
+        errors = {}
+
+        # Validate each field individually
+        for field in form.fields:
+            # Only validate if the field is being processed
+            form_field = form.fields[field]
+            field_value = request.POST.get(field)
+            if field_value:
+                form_field.widget.attrs['value'] = field_value
+            if not form_field.is_valid():
+                errors[field] = form_field.errors
+
+        return JsonResponse({'errors': errors})
+
+    return JsonResponse({'errors': {}})
 
 
 def validate_date(date_string):
-    """Validate if the date string is in the proper format YYYY-MM-DD."""
     try:
         datetime.strptime(date_string, "%Y-%m-%d")
         return True
@@ -97,22 +108,19 @@ def validate_date(date_string):
         return False
 
 def is_author_name_unique(author_name):
-    """Check if the author name already exists in the database."""
     return Author.objects.filter(name=author_name).exists()
 
 def validate_author_name(author_name):
-    """Validate if the author name is unique."""
     if is_author_name_unique(author_name):
         raise ValidationError("Author with this name already exists.")
 
-
+@login_required
 def author_validate(request):
     if request.method == 'POST':
         field = request.POST.get('field')
         value = request.POST.get('value')
 
         errors = {}
-
         try:
             if field == 'new_author_name':
                 if not value:
@@ -120,13 +128,11 @@ def author_validate(request):
                 if Author.objects.filter(name=value).exists():
                     raise ValidationError("Author with this name already exists.")
 
-            elif field == 'new_author_nationality':
-                if value and len(value) < 2:
-                    raise ValidationError("Nationality must be at least 2 characters long.")
+            elif field == 'new_author_nationality' and value and len(value) < 2:
+                raise ValidationError("Nationality must be at least 2 characters long.")
 
-            elif field == 'new_author_birth_date':
-                if value and not validate_date(value):
-                    raise ValidationError("Invalid date format. Use YYYY-MM-DD.")
+            elif field == 'new_author_birth_date' and value and not validate_date(value):
+                raise ValidationError("Invalid date format. Use YYYY-MM-DD.")
                 
         except ValidationError as e:
             errors[field] = str(e)
@@ -135,12 +141,13 @@ def author_validate(request):
 
     return JsonResponse({'valid': False, 'errors': {'non_field': ['Invalid request method.']}})
 
+@login_required
 def search_author(request):
     author_name = request.GET.get('name', '').strip()
     exists = Author.objects.filter(name=author_name).exists()
     return JsonResponse({'exists': exists})
 
-# View to check if genre exists
+@login_required
 def search_genre(request):
     genre_name = request.GET.get('name', '').strip()
     exists = Genre.objects.filter(name=genre_name).exists()
@@ -163,6 +170,34 @@ def confirm_add_author(request):
 
     return render(request, 'catalog/confirm_add_author.html', {'author_name': author_name})
 
+from django.shortcuts import render, redirect
+from .forms import GenreForm
+from .models import Genre
+
+@login_required
+def add_genre(request):
+    if request.method == 'POST':
+        form = GenreForm(request.POST)
+        
+        if form.is_valid():
+            genre_name = form.cleaned_data.get('genre_name').strip()
+
+            # Check for duplicate genre
+            if Genre.objects.filter(genre_name__iexact=genre_name).exists():
+                form.add_error('genre_name', 'This genre already exists.')
+            else:
+                form.save()  # Save the genre to the database
+                return redirect('add_book')  # Redirect back to the book form
+
+    else:
+        form = GenreForm()
+
+    # Fetch existing genres to display
+    existing_genres = Genre.objects.all()
+
+    return render(request, 'catalog/add_genre.html', {'form': form, 'existing_genres': existing_genres})
+
+
 # Add Genre Confirmation View
 @login_required
 def confirm_add_genre(request):
@@ -178,32 +213,18 @@ def confirm_add_genre(request):
 
 logger = logging.getLogger(__name__)
 
+@login_required
 def add_author(request):
     if request.method == 'POST':
-        author_name = request.POST.get('new_author_name')
-        author_bio = request.POST.get('new_author_bio')
-        author_nationality = request.POST.get('new_author_nationality')
-        birth_date = request.POST.get('new_author_birth_date')
-        death_date = request.POST.get('new_author_death_date')
-        profile_picture = request.FILES.get('new_author_profile_picture')  # Use request.FILES here
-
-        # Debugging: Log the values received
-        print(f"Received author name: {author_name}, biography: {author_bio}")
-
-        if author_name and author_bio :
-            author = Author.objects.create(
-                name=author_name,
-                bio=author_bio,
-                nationality=author_nationality if author_nationality else None,
-                birth_date=birth_date if birth_date else None,
-                death_date=death_date if death_date else None,
-                profile_picture=profile_picture if profile_picture else None
-            )
-            return JsonResponse({'success': True})
-        else:
-            return JsonResponse({'success': False, 'error': 'Invalid data or missing file.'})
-
-    return JsonResponse({'success': False, 'error': 'Invalid request method.'})
+        form = AuthorForm(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()  # Save the author to the database
+            request.session['book_form_data'] = request.POST
+            return redirect('add_book')  # Redirect to the book form
+    else:
+        form = AuthorForm()
+    
+    return render(request, 'catalog/add_author.html', {'form': form})
     
 
 def author_list(request):
@@ -245,6 +266,7 @@ from django.http import FileResponse, Http404
 import os
 from django.conf import settings
 
+@login_required
 def serve_pdf(request, file_name):
     pdf_directory = os.path.join(settings.MEDIA_ROOT, 'books')  
     pdf_path = os.path.join(pdf_directory, file_name)
@@ -260,6 +282,7 @@ from .models import Book, Cart,CartItem
 from django.utils import timezone
 from accounts.models import User  # Import the custom User model
 
+@login_required
 def add_to_cart(request, book_id):
     # Retrieve the book object
     try:
@@ -295,6 +318,7 @@ def add_to_cart(request, book_id):
 
 
 # View for displaying the cart
+@login_required
 def cart_view(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect to login if the user is not logged in
@@ -326,6 +350,7 @@ def cart_view(request):
     })
 
 # Remove item from cart
+@login_required
 def remove_from_cart(request, book_id):
     try:
         book = Book.objects.get(book_id=book_id)  # Use 'book_id' instead of 'id'
@@ -347,6 +372,7 @@ def remove_from_cart(request, book_id):
 
     return redirect('cart')  # Redirect to cart page after removal
 
+@login_required
 def checkout_view(request):
     """
     Redirects to the choose payment page when the user proceeds to checkout.
@@ -354,7 +380,7 @@ def checkout_view(request):
     # Redirect to choose_payment page
     return redirect(reverse('choose_payment') + "?source_page=cart")
 
-
+@login_required
 def update_cart(request):
     if not request.user.is_authenticated:
         return redirect('login')  # Redirect to login if the user is not logged in
@@ -379,6 +405,7 @@ def update_cart(request):
     # Redirect back to the cart page to reflect changes
     return redirect('cart')
 
+@login_required
 def cart_page(request):
     success = request.GET.get("success")
     membership_id = request.GET.get("membership_id")
@@ -392,6 +419,7 @@ from accounts.models import UserMembership, MembershipPlan, SubscriptionPlan
 
 from decimal import Decimal
 
+@login_required
 def buy_book(request, book_id):
     # Retrieve the book or return 404 if not found
     book = get_object_or_404(Book, book_id=book_id)
@@ -413,7 +441,9 @@ def buy_book(request, book_id):
             else:
                 discount = 0
 
-            discounted_price = book.price * (1 - discount / 100)
+            from decimal import Decimal
+
+            discounted_price = book.price * (Decimal('1') - Decimal(discount) / Decimal('100'))
 
     except UserMembership.DoesNotExist:
         # If no membership, no discount is applied
@@ -497,3 +527,15 @@ def rent_book(request, book_id):
 
     return JsonResponse({"message": "Book added to cart for rent."}, status=200)
 
+
+def genre_books_view(request, genre_name):
+    # Fetch the genre based on the genre_name (slug or name)
+    genre = Genre.objects.get(genre_name__iexact=genre_name)
+    books = Book.objects.filter(genres=genre)
+
+    # Pass the genre and books to the template
+    return render(request, 'catalog/genre_books.html', {'genre': genre, 'books': books})
+
+def genre_list_view(request):
+    genres = Genre.objects.all()  # Get all genres
+    return render(request, 'catalog/genre_list.html', {'genres': genres})

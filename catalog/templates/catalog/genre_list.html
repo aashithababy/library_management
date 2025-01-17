@@ -1,0 +1,165 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Genres</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: black;
+            font-family: 'Poppins', sans-serif;
+            color: white;
+            overflow: hidden;
+            animation: fadeIn 2s ease-out;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* Dim Glitter effect */
+        body::before {
+            content: "";
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 2%, rgba(0,0,0,0) 50%);
+            animation: glitter 5s infinite alternate;
+        }
+
+        @keyframes glitter {
+            0% { opacity: 0.5; }
+            100% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 50px auto;
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            color: goldenrod;
+            text-shadow: 0 0 10px rgba(218, 165, 32, 0.7);
+            animation: pulse 2s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { text-shadow: 0 0 5px rgba(218, 165, 32, 0.5); }
+            100% { text-shadow: 0 0 15px rgba(218, 165, 32, 0.8); }
+        }
+
+        .genre-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        /* Dimmed Glow Effect for Cards */
+        .genre-card {
+            background-color: rgba(50, 50, 50, 0.9);
+            border: 1px solid goldenrod;
+            border-radius: 15px;
+            padding: 20px;
+            width: 220px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .genre-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.7);
+        }
+
+        /* Dimmed Button Glow */
+        .genre-button {
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 18px;
+            padding: 15px 30px;
+            background: linear-gradient(45deg, goldenrod, #d4a017);
+            color: black;
+            border-radius: 50px;
+            border: none;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .genre-button:hover {
+            background: linear-gradient(45deg, #d4a017, goldenrod);
+            box-shadow: 0 0 15px rgba(218, 165, 32, 0.8);
+            transform: translateY(-5px);
+        }
+
+        /* Back button with subtle glow */
+        .back-home {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 5px 10px;
+            background: linear-gradient(45deg, goldenrod, #d4a017);
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(218, 165, 32, 0.5);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .back-home a {
+            color: black;
+            text-decoration: none;
+        }
+
+        .back-home:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(218, 165, 32, 0.7);
+        }
+
+        /* Floating Animation for Genre Cards */
+        .genre-card {
+            animation: floatAnimation 6s infinite alternate;
+        }
+
+        @keyframes floatAnimation {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-10px); }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Back to Home Button -->
+    <div class="back-home">
+        <a href="/" class="btn">← Back to Home</a>
+    </div>
+
+    <div class="container">
+        <h1>Book Genres</h1>
+
+        <!-- Genre Cards Section -->
+        <div class="genre-container">
+            {% for genre in genres %}
+                <div class="genre-card">
+                    <a href="{% url 'genre_books' genre_name=genre.genre_name|slugify %}" class="genre-button">{{ genre.genre_name }}</a>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

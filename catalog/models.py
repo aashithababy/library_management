@@ -1,7 +1,9 @@
+from django import forms
 from django.db import models
 import re
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 # Validator for URLs, local file paths, and PDF filenames
 def validate_url_or_local_path(value):
@@ -55,27 +57,36 @@ class Book(models.Model):
     genres = models.ManyToManyField(Genre, blank=True)
     description = models.TextField(null=True, blank=True)
     published_year = models.PositiveIntegerField()
-    isbn = models.CharField(max_length=13)
+    isbn = models.CharField(max_length=13,unique=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)
     rent_price = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True)
     is_bestseller = models.BooleanField()
     is_early_release = models.BooleanField()
-    content_link = models.FileField(max_length=500, null=True, blank=True, validators=[validate_url_or_local_path])    
+    content_link = models.URLField(blank=True, null=True)
+    content_file = models.FileField(upload_to='books/', blank=True, null=True)    
     access_level = models.CharField(max_length=50, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     read_count = models.PositiveIntegerField(null=True, blank=True)
     popularity_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
-    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True)
+    rating = models.DecimalField(max_digits=3, decimal_places=2, null=True, blank=True,validators=[MinValueValidator(1), MaxValueValidator(5)] )
     updated_at = models.DateTimeField(auto_now=True)
     deleted_at = models.DateTimeField(null=True, blank=True)
     is_available = models.BooleanField(default=True)
-    cover_image = models.ImageField(upload_to='books/', null=True, blank=True)  # Add image field
+    cover_image = models.ImageField(upload_to='books/', null=True, blank=True)  
+    stock = models.PositiveIntegerField(default=0)
 
     class Meta:
         ordering = ['author']
+        unique_together = ['title', 'isbn']
 
     def __str__(self):
         return self.title
+    
+    def clean(self):
+        if not self.is_available and self.stock > 0:
+            raise forms.ValidationError("A book marked as unavailable cannot have stock greater than zero.")
+        if self.is_available and self.stock == 0:
+            raise forms.ValidationError("A book marked as available must have stock greater than zero.")
 
 # CatalogBookGenre Table
 class CatalogBookGenre(models.Model):

@@ -1,13 +1,184 @@
-{% block content %}
-  <h2>Add Genre</h2>
+{% load extra_filters %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Genre</title>
+    <style>
+        body {
+            padding: 0;
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            padding-left: 20px;
+            padding-right: 20px;
+            min-height: 100vh;
+        }
 
-  <form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 6px 4px goldenrod;
+            width: 450px;
+            text-align: center;
+            border: 1px solid goldenrod;
+            max-width: 100%;
+            margin: auto;
+            margin-top: 20px;
+        }
 
-    <button type="submit" class="btn btn-primary">Add Genre</button>
-  </form>
+        h1 {
+            margin-bottom: 20px;
+            font-size: 30px;
+            color: goldenrod;
+        }
 
-  <br><br>
-  <a href="{% url 'admin:catalog_genre_changelist' %}" class="btn btn-secondary">Back to Genre List</a>
-{% endblock %}
+        .form-label {
+            color: #fff;
+            font-weight: bold;
+            text-align: left;
+            display: block;
+        }
+
+        .form-control {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 94%;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .form-errors {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        button[type="submit"] {
+            padding: 10px;
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: darkgoldenrod;
+        }
+
+        .existing-genres {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .existing-genres h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        .genre-cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .genre-card {
+            background-color: rgba(255, 255, 255, 0.7);
+            color: #000;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            width: 180px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .genre-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .genre-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Add New Genre</h1>
+        <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
+            {% csrf_token %}
+
+            <!-- Genre Name -->
+            <div class="form-group">
+                <label for="id_genre_name" class="form-label">Genre Name:</label>
+                {{ form.genre_name|add_class:"form-control" }}
+                <div class="form-errors" id="name-error"></div>
+            </div><br>
+
+            <button type="submit">Add Genre</button>
+
+            <!-- Existing Genres -->
+            <div class="existing-genres">
+                <h2>Existing Genres:</h2>
+                <div class="genre-cards">
+                    {% for genre in existing_genres %}
+                        <div class="genre-card">
+                            <div class="genre-name">{{ genre.genre_name }}</div>
+                        </div>
+                    {% empty %}
+                        <p>No genres available yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('id_genre_name').addEventListener('input', validateName);
+
+        function validateName() {
+          const nameInput = document.getElementById('id_genre_name').value;
+          const nameError = document.getElementById('name-error');
+      
+          // Capitalize the first letter
+          document.getElementById('id_genre_name').value = nameInput.charAt(0).toUpperCase() + nameInput.slice(1);
+      
+          // Check if it only contains letters and has at least 3 characters
+          const regex = /^[A-Za-z]+$/;
+      
+          if (nameInput.length < 3) {
+              nameError.textContent = 'Genre name must be at least 3 characters long.';
+          } else if (!regex.test(nameInput)) {
+              nameError.textContent = 'Genre name must contain only letters.';
+          } else {
+              nameError.textContent = '';
+          }
+      }
+      
+        function validateForm() {
+            const nameError = document.getElementById('name-error').textContent;
+
+            if (nameError) {
+                alert('Please correct the errors before submitting.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

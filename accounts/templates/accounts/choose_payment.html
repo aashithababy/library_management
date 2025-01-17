@@ -210,6 +210,7 @@
         function openPopup(method) {
             document.getElementById("popup").style.display = "flex";
             document.getElementById("payment-method").innerText = method;
+            document.getElementById("selected-method").value = method;
 
             const paymentDetails = document.getElementById("payment-details");
             paymentDetails.innerHTML = '';
@@ -291,7 +292,8 @@
             event.preventDefault();
             alert("Payment information is valid. Proceeding with payment.");
             closePopup(); 
-            window.location.href = "/"; 
+            document.getElementById("payment-form").submit();
+            {% comment %} window.location.href = "/";  {% endcomment %}
         }
     </script>
 </body>

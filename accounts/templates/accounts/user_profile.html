@@ -1,0 +1,485 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile</title>
+
+    <!-- AOS Library -->
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
+    <!-- Bootstrap 4 -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+
+    <style>
+        body {
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        h1, h2 {
+            color: goldenrod; 
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-bottom: 30px;
+        }
+
+        h2 {
+            font-size: 24px;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .container {
+            padding: 30px;
+        }
+
+        .card {
+            background-color: #1f1f1f;
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            max-width: 64%;
+            margin: auto;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 8px 15px rgba(255, 215, 0, 0.5);
+        }
+
+        .card-header {
+            background-color: #333;
+            color: #fff;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .card-body {
+            padding: 25px;
+            background-color: #2e2e2e;
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: goldenrod;
+        }
+
+        .profile-info {
+            background-color: #444;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        .profile-info p {
+            font-size: 16px;
+        }
+
+        .top-buttons {
+            position: absolute;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 20px;
+            top: 20px;
+            left: 0;
+        }
+
+        .top-buttons a {
+            text-decoration: none;
+            padding: 12px 25px;
+            background-color: goldenrod;
+            color: black;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+        }
+
+        .top-buttons a:hover {
+            background-color: darkgoldenrod;
+        }
+
+        .table {
+            background-color: #444;
+            border-radius: 10px;
+            margin-top: 20px;
+            width: 100%; /* Ensures the table uses the full width of the card */
+        }
+        
+        .table th, .table td {
+            padding: 15px;
+            text-align: center;
+            width: 25%; /* Optional, you can adjust this if needed */
+        }
+        
+        .table th {
+            background-color: #333;
+            color: #fff;
+        }
+        
+        .table td {
+            color: #fff;
+        }
+        
+        .table-responsive {
+            width: 100%; /* Ensures the table is responsive and fills its container */
+            overflow-x: auto; /* Allows horizontal scrolling on smaller screens */
+        }
+        
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        ul li {
+            background-color: #555;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        ul li:hover {
+            background-color: #666;
+        }
+
+        @media screen and (max-width: 767px) {
+            .container {
+                padding: 15px;
+            }
+        }
+
+            h1 {
+                font-size: 20px;
+                color: goldenrod;
+                text-align: center;
+                font-family: 'Dancing Script', cursive; /* Fancy print font */
+                font-size: 2.5rem; /* Increase size to make it more prominent */
+                
+                }
+
+            h2 {
+                font-size: 18px;
+            }
+
+            .top-buttons a {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .card-body {
+                padding: 20px;
+            }
+        
+
+        .btn-edit {
+            background-color: goldenrod;
+            color: black;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .btn-edit:hover {
+            background-color: darkgoldenrod;
+        }
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        
+        /* Golden button styling */
+        .btn-golden {
+            background-color: goldenrod;
+            color: white;
+            border: 2px solid goldenrod;
+        }
+        
+        .btn-golden:hover {
+            background-color: darkgoldenrod;
+            border-color: darkgoldenrod;
+            transform: scale(1.05);
+        }
+        
+        .btn-golden:active {
+            background-color: darkorange;
+            border-color: darkorange;
+        }
+        .glowing-arrow {
+            font-size: 40px;
+            color: goldenrod;
+            cursor: pointer;
+            text-shadow: 
+                0 0 10px goldenrod, 
+                0 0 20px goldenrod, 
+                0 0 30px goldenrod, 
+                0 0 40px goldenrod;
+            transition: transform 0.3s ease-in-out;
+            animation: glow 1.5s ease-in-out infinite;
+        }
+        
+        .glowing-arrow:hover {
+            transform: scale(1.2) rotate(-10deg);
+            color: orange;
+            text-shadow: 
+                0 0 20px orange, 
+                0 0 30px orange, 
+                0 0 40px orange, 
+                0 0 50px orange;
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+            50% { text-shadow: 0 0 30px goldenrod, 0 0 40px goldenrod; }
+            100% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+</head>
+<body>
+
+<div class="container mt-5">
+    <div class="top-buttons">
+        <!-- Button for going back to User Info page (left-aligned) -->
+        {% if request.GET.from == 'user_info' %}
+            <a href="{% url 'user_info_page' %}" class="btn btn-golden">Back to User Info</a>
+        {% else %}
+            <i class="fas fa-arrow-left glowing-arrow" onclick="window.history.back()"></i>
+        {% endif %}
+
+        <!-- Always show 'Go to Home' button -->
+        <a href="{% url 'home_page' %}" class="btn btn-golden">Go to Home</a>
+
+        
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h1>User Profile - {{ user.username }}</h1>
+        </div>
+        <div class="card-body">
+            <!-- Basic Information Section -->
+                <div class="text-right mb-3">
+                    <a href="{% url 'edit_user_profile' user_id=user.id %}" class="btn-edit">Edit Profile</a>
+                </div>
+    
+                <!-- Profile Information Section -->
+                <h2>Basic Information</h2>
+                <div class="d-flex justify-content-between">
+                    <div class="profile-info" style="flex: 1;">
+                        <p><strong>Username:</strong> {{ user.username }}</p>
+                        <p><strong>First Name:</strong> {{ user.first_name }}</p>
+                        <p><strong>Last Name:</strong> {{ user.last_name }}</p>
+                        <p><strong>Email:</strong> {{ user.email }}</p>
+                        {% if user_profile %}
+                        <p><strong>Phone Number:</strong> {{ user_profile.phone_number }}</p>
+                        {% else %}
+                        <p>No profile details available.</p>
+                        {% endif %}
+                    </div>
+    
+                    <div style="flex: 0 0 180px;">
+                        {% if user_profile.photo %}
+                            <img src="{{ user_profile.photo.url }}" alt="User Photo" class="img-thumbnail" style="width: 200px; height: 228px;">
+                        {% else %}
+                            <p>No photo available</p>
+                        {% endif %}
+                    </div>
+                </div>
+    
+                <!-- Address Section -->
+                <h2>Address</h2>
+                <div class="profile-info">
+                    {% if address %}
+                        <p><strong>House/Lane:</strong> {{ address.house_number_or_lane }}</p>
+                        <p><strong>City:</strong> {{ address.city }}</p>
+                        <p><strong>State:</strong> {{ address.state }}</p>
+                        <p><strong>Postal Code:</strong> {{ address.postal_code }}</p>
+                        <p><strong>Country:</strong> {{ address.country }}</p>
+                    {% else %}
+                        <p>No address details available.</p>
+                    {% endif %}
+                </div>
+
+            <!-- Membership and Subscription Section -->
+            <h2>Membership and Subscription</h2>
+            <div class="profile-info">
+                {% if membership %}
+                <table class="table table-bordered table-dark">
+                    <tbody>
+                        <tr>
+                            <th>Membership Plan</th>
+                            <td>{{ membership.membership_plan.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Subscription Plan</th>
+                            <td>{{ membership.subscription_plan.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Membership Start Date</th>
+                            <td>{{ membership.membership_start_date }}</td>
+                        </tr>
+                        <tr>
+                            <th>Subscription Start Date</th>
+                            <td>{{ membership.subscription_start_date }}</td>
+                        </tr>
+                        <tr>
+                            <th>Membership Active</th>
+                            <td>{% if membership.is_membership_active %}Yes{% else %}No{% endif %}</td>
+                        </tr>
+                        <tr>
+                            <th>Subscription Active</th>
+                            <td>{% if membership.is_subscription_active %}Yes{% else %}No{% endif %}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                {% else %}
+                <p>No membership or subscription details available.</p>
+                {% endif %}
+            </div>
+            
+
+            <!-- Orders Section -->
+            <div class="section-title d-flex justify-content-between">
+                <span>Orders</span>
+            </div>
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>User</th>
+                        <th>Order Date</th>
+                        <th>Total Amount</th>
+                        <th>View Orders</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if orders %}
+                        {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.user.username }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>Rs{{ order.total_amount }}</td>
+                            <td>
+                                <a href="{% url 'view_order_details' order_id=order.order_id %}" class="btn btn-golden">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center">No orders available.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <!-- Cart Items Section -->
+            <div class="section-title">Cart Items</div>
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Cart ID</th>
+                        <th>Book</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if cart_items %}
+                        {% for item in cart_items %}
+                        <tr>
+                            <td>{{ item.cart.id }}</td>
+                            <td>{{ item.book.title }}</td>
+                            <td>{{ item.quantity }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center">No cart items available.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+
+            <!-- Rented Books Section -->
+            <div class="section-title">Rented Books</div>
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th>Rental ID</th>
+                        <th>User</th>
+                        <th>Book</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if rented_books %}
+                        {% for rented in rented_books %}
+                        <tr>
+                            <td>{{ rented.rental_id }}</td>
+                            <td>{{ rented.user.username }}</td>
+                            <td>{{ rented.book.title }}</td>
+                            <td>{{ rented.rent_start_date }}</td>
+                            <td>{{ rented.rent_end_date }}</td>
+                            <td>{{ rented.status }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center">No rented books available.</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<!-- AOS Library Script -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,  // Animation duration
+    });
+</script>
+
+<!-- Bootstrap 4 JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

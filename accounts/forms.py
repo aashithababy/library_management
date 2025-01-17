@@ -88,3 +88,17 @@ class RegistrationForm(forms.Form):
             address=address,
             phone_number=self.cleaned_data['phone_number'],
         )
+
+
+class UserProfileForm(forms.ModelForm):
+    first_name = forms.CharField(max_length=100)
+    last_name = forms.CharField(max_length=100)
+    email = forms.EmailField()
+    
+    class Meta:
+        model = UserProfile
+        fields = ['photo', 'phone_number']
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        fields = ['house_number_or_lane', 'city', 'state', 'postal_code']  

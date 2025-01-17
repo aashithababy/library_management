@@ -9,6 +9,7 @@ urlpatterns = [
     path('confirm-add-genre/', views.confirm_add_genre, name='confirm_add_genre'),
     path('update/<int:id>/', views.update_book, name='update_book'),
     path('add-author/', views.add_author, name='add_author'),
+    path('add-genre/', views.add_genre, name='add_genre'),
     path('authors/', views.author_list, name='author_list'),
     path('author/<int:id>/', views.author_detail, name='author_detail'),
     path('search-genre/', views.search_genre, name='search_genre'),
@@ -25,5 +26,8 @@ urlpatterns = [
     path('update_cart/', views.update_cart, name='update_cart'), 
     path('buy/<int:book_id>/', views.buy_book, name='buy_book'),
     path('rent/<int:book_id>/', views.rent_book, name='rent_book'),
+    path('validate-form/', views.validate_form, name='validate_form'),
+    path('genres/', views.genre_list_view, name='genre_list'),
+    path('genre/<str:genre_name>/', views.genre_books_view, name='genre_books'),
    
 ]

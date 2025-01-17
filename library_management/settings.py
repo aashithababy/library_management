@@ -47,7 +47,7 @@ TEMPLATES = [
         'DIRS': [
             BASE_DIR / 'home' / 'templates', 
             BASE_DIR / 'catalog' / 'templates',
-            BASE_DIR / 'accounts' / 'templates',
+            BASE_DIR / 'accounts' / 'templates'/ 'accounts',
 
               
         ],

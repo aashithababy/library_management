@@ -32,7 +32,7 @@ def home(request):
     bestsellers = books.filter(is_bestseller=True)
     early_releases = books.filter(is_early_release=True)
     fiction = books.filter(genres__genre_name__iexact='Fiction')
-    nonfiction = books.filter(genres__genre_name__iexact='Non-Fiction')
+    nonfiction = books.filter(genres__genre_name__iexact='Nonfiction')
 
     context = {
         'query': query,

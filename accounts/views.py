@@ -2,12 +2,18 @@ import os
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from catalog.models import Book
-from .models import UserMembership
+from .models import OrderItem, UserMembership
 from django.http import HttpResponseForbidden
 
 from django.shortcuts import render
 
 from catalog.models import Book
+from .models import UserProfile, UserMembership, Address
+from django.contrib.auth.models import User
+
+from django.shortcuts import render
+from django.contrib.auth.models import User
+from .models import UserProfile, UserMembership
 
 
 def home(request):
@@ -129,7 +135,7 @@ from .models import User, MembershipPlan, SubscriptionPlan, UserMembership
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
 from .models import Address,Role
-from .forms import RegistrationForm
+from .forms import AddressForm, RegistrationForm, UserProfileForm
 
 from django.shortcuts import render, redirect
 from django.contrib import messages
@@ -417,41 +423,117 @@ def choose_payment(request):
     """
     return render(request, 'accounts/choose_payment.html')
 
+def generate_invoice(order):
+    # Example invoice generation logic
+    Invoice.objects.create(order=order, amount=order.total_amount)
+
+from django.utils.timezone import now
+import os
+from django.shortcuts import render, redirect
+from django.contrib.auth.decorators import login_required
+from .models import Order
+from catalog.models import Cart, CartItem
+
 @login_required
 def process_payment(request):
     if request.method == "POST":
         user = request.user
-        membership_plan_name = request.POST.get("membership_plan")
-        # subscription_plan_name = request.POST.get("subscription_plan")
+        source_page = request.POST.get("source_page")
+        payment_method = request.POST.get("payment_method")
 
         try:
-            membership_plan = MembershipPlan.objects.get(name=membership_plan_name)
-            # subscription_plan = SubscriptionPlan.objects.get(name=subscription_plan_name)
-        except (MembershipPlan.DoesNotExist, SubscriptionPlan.DoesNotExist):
-            # except (MembershipPlan.DoesNotExist, SubscriptionPlan.DoesNotExist):
-            return render(request, "error.html", {"message": "Selected plan does not exist."})
+            # ✅ Fetch the active cart for the user
+            cart = Cart.objects.get(user=user, status='active')
+            cart_items = CartItem.objects.filter(cart=cart)
+            total_amount = sum(item.book.price * item.quantity for item in cart_items)
+        except Cart.DoesNotExist:
+            return render(request, "error.html", {"message": "No active cart found."})
 
-        # Simulate payment success
-        payment_success = True  # Replace this with actual payment gateway logic
+        # ✅ Simulating payment success (Replace with actual payment gateway)
+        payment_success = True  
+
         if payment_success:
-            # Create or update UserMembership
-            user_membership, created = UserMembership.objects.get_or_create(user=user)
-            user_membership.membership_plan = membership_plan
-            # user_membership.subscription_plan = subscription_plan
-            user_membership.membership_start_date = date.today()
-            user_membership.save()  # Generates and saves membership_id and subscription_id
+            # ✅ Create an order record and save the payment method
+            order = Order.objects.create(
+                user=user,
+                order_date=now().date(),
+                total_amount=total_amount,
+                payment_method=payment_method  # Save the payment method here
+            )
 
-            return redirect("payment_success_page")  # Redirect to success page
+            # ✅ Move cart items to order and clear the cart
+            for item in cart_items:
+                order_item = OrderItem(
+                    order=order,
+                    book=item.book,
+                    quantity=item.quantity,
+                    price=item.book.price,
+                    cart=cart  # Ensure cart is set here
+                )
+                order_item.save()
 
-        return render(request, "payment_failure.html")  # Payment failed
+            # ✅ Mark the cart as completed
+            cart.status = "completed"
+            cart.save()
+
+            # ✅ Generate invoice including order items
+            invoice_data = f"""
+            Invoice for Order ID: {order.order_id}
+            User: {user.username}
+            Order Date: {order.order_date}
+            Total Amount: Rs. {total_amount}
+            Payment Method: {payment_method}
+
+            Items Purchased:
+            """
+
+            # ✅ List all order items and prices in the invoice
+            for item in cart_items:
+                invoice_data += (
+                    f"{item.book.title} - Rs. {item.book.price} x {item.quantity} = Rs. {item.book.price * item.quantity}\n"
+                )
+
+            invoice_data += f"\nGrand Total: Rs. {total_amount}"
+
+            # ✅ Save the invoice as a .txt file
+            invoice_path = f"media/invoices/invoice_{order.order_id}.txt"
+            os.makedirs(os.path.dirname(invoice_path), exist_ok=True)
+            with open(invoice_path, "w") as file:
+                file.write(invoice_data)
+
+            # ✅ Redirect to the success page and pass the order ID
+            return redirect("payment_success_page", order_id=order.order_id)
+
+        # ✅ Payment failure scenario
+        return render(request, "accounts/payment_failure.html")
+
+    # ✅ Invalid request method handling
     return render(request, "error.html", {"message": "Invalid request method"})
 
-def payment_success(request):
-    user_membership = UserMembership.objects.get(user=request.user)
-    return render(request, "accounts/payment_success.html", {"user_membership": user_membership})
+
+@login_required
+def payment_success(request, order_id):
+    try:
+        # ✅ Fetch the order and order items using the correct primary key
+        order = Order.objects.get(order_id=order_id, user=request.user)
+        order_items = OrderItem.objects.filter(order=order)  # Fetch order items directly
+    except Order.DoesNotExist:
+        return render(request, "error.html", {"message": "Order not found."})
+
+    # ✅ Pass the order and order items to the template, including the payment method
+    return render(request, "accounts/payment_success.html", {
+        "order": order,
+        "order_items": order_items,
+        "payment_method": order.payment_method  # Fetch the payment method dynamically from the order
+    })
 
 def payment_failure(request):
     return render(request, "accounts/payment_failure.html")
+
+def view_order_details(request, order_id):
+    order = get_object_or_404(Order, pk=order_id)
+    order_items = OrderItem.objects.filter(order=order)
+    return render(request, 'accounts/order_details.html', {'order': order, 'order_items': order_items})
 
 # def process_payment(request):
 #     """
@@ -525,3 +607,124 @@ def delete_user(request, user_id):
     user.delete()
     messages.success(request, 'User deleted successfully!')
     return redirect('user_info_page')
+
+
+def user_info_page(request):
+    # Use select_related to optimize fetching related data (userprofile, usermembership)
+    users = User.objects.select_related('userprofile', 'usermembership').all()
+
+    user_data = []
+    for user in users:
+        # Safely retrieve profile and membership, account for None values
+        user_profile = getattr(user, 'userprofile', None)  # None if no userprofile exists
+        user_membership = getattr(user, 'usermembership', None)  # None if no usermembership exists
+        
+        # Append the data, including None for optional fields
+        user_data.append({
+            'user': user,
+            'user_profile': user_profile,
+            'user_membership': user_membership
+        })
+
+    # Debugging Output
+    print("User Data:", user_data)  # Check if this shows what you expect
+
+    # Ensure data is passed correctly to the template
+    return render(request, 'user_info_page.html', {'user_data': user_data})
+
+from django.shortcuts import render, get_object_or_404
+from django.contrib.auth.models import User
+from .models import UserProfile, Address, UserMembership, Order
+from catalog.models import Cart, CartItem, RentedBook, Book
+
+def user_profile(request, user_id):
+    # Fetch the user object using the provided user_id
+    user = get_object_or_404(User, id=user_id)
+    
+    # Get the user profile, address, and membership information
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+        address = user_profile.address
+    except UserProfile.DoesNotExist:
+        user_profile = None
+        address = None
+    
+    try:
+        membership = UserMembership.objects.get(user=user)
+    except UserMembership.DoesNotExist:
+        membership = None
+
+    # Fetch user's active cart and cart items
+    cart = Cart.objects.filter(user=user, status='active').first()
+    cart_items = CartItem.objects.filter(cart=cart) if cart else []
+
+    # Fetch user's orders
+    orders = Order.objects.filter(user=user)
+
+    # Fetch rented books
+    rented_books = RentedBook.objects.filter(user=user)
+
+    # Fetch all books for the user
+    books = Book.objects.all()
+
+    context = {
+        'user': user,
+        'user_profile': user_profile,
+        'address': address,
+        'membership': membership,
+        'cart_items': cart_items,
+        'orders': orders,
+        'rented_books': rented_books,
+        'books': books,
+    }
+    
+    return render(request, 'user_profile.html', context)
+
+def edit_user_profile(request, user_id):
+    # Fetch the user using the user_id
+    user = get_object_or_404(User, id=user_id)
+
+    # Get the existing user profile and address, if they exist
+    try:
+        user_profile = UserProfile.objects.get(user=user)
+    except UserProfile.DoesNotExist:
+        user_profile = UserProfile(user=user)  # Create a new profile if it doesn't exist
+    
+    try:
+        address = user_profile.address
+    except Address.DoesNotExist:
+        address = Address(user=user)  # Create a new address if it doesn't exist
+
+    # Handle the form submission
+    if request.method == 'POST':
+        print("POST request received.")  # Debugging
+        # Updating the User fields alongside forms
+        user.first_name = request.POST.get('first_name')
+        user.last_name = request.POST.get('last_name')
+        user.email = request.POST.get('email')
+
+        user_profile_form = UserProfileForm(request.POST, request.FILES, instance=user_profile)
+        address_form = AddressForm(request.POST, instance=address)
+            
+        if user_profile_form.is_valid() and address_form.is_valid():
+            print("Forms are valid. Saving data.")  # Debugging
+            user.save()  # Save the updated User fields
+            user_profile_form.save()
+            address_form.save()
+            return redirect('user_profile', user_id=user.id)
+        else:
+            print("Forms are not valid.")  # Debugging
+            print("User Profile Errors:", user_profile_form.errors)
+            print("Address Form Errors:", address_form.errors)
+    else:
+        # Prepopulate the forms with existing data if available
+        user_profile_form = UserProfileForm(instance=user_profile)
+        address_form = AddressForm(instance=address)
+
+    context = {
+        'user': user,  # Pass user data (first_name, last_name, email)
+        'user_profile_form': user_profile_form,  # Pass UserProfile form for phone_number, photo
+        'address_form': address_form,  # Pass Address form for address fields
+    }
+
+    return render(request, 'edit_user_profile.html', context)

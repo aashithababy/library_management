@@ -134,7 +134,8 @@
             <img src="{% static 'admin/images/admin_profile_pic1.jpeg' %}" alt="Admin Logo">
             <h1>Welcome Admin</h1>
         </div>
-        <button class="logout-button" onclick="logout()">Logout</button>
+        <button class="logout-button"><a href="{% url 'logout' %}">Logout</a></button>
+        
     </header>
 
     <div class="container">

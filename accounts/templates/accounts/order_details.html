@@ -1,8 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Payment Successful</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
     <style>
         body {
             margin: 0;
@@ -15,67 +18,50 @@
             color: #fff;
         }
 
-        .success-container {
+        .order-container {
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100%;
             padding: 50px 50px;
-            margin-top: 20px;
             margin-bottom: 50px;
         }
 
-        .success-card {
+        .order-card {
             position: relative; 
             background: black;
             padding: 30px;
             border-radius: 15px;
-            width: 500px;
+            width: 600px;
             text-align: center;
-            animation: fadeIn 1s ease-in-out;
+            animation: fadeIn 0.5s ease-in-out;
             box-shadow: 0 0 15px goldenrod;
             z-index: 1; 
         }
-        
-        /* Apply border on top of the card using the ::before pseudo-element */
-        .success-card::before {
+
+        .order-card::before {
             content: '';
             position: absolute;
-            top: -10px;  /* Adjust for the space around the card */
+            top: -10px;
             left: -10px;
             right: -10px;
             bottom: -10px;
-            border: 10px solid transparent; /* Border size set to work with the image */
+            border: 10px solid transparent;
             border-image-source: url('{% static "images/border.png" %}');
-            border-image-slice: 30; /* Adjust the slice if needed */
+            border-image-slice: 30;
             border-image-repeat: stretch;
             border-radius: 15px;
-            z-index: -1; /* Ensure the pseudo-element is on top of the card's content */
-        }
-        
-        /* ✅ Ensure Logo is Properly Sized and Visible */
-        .logo {
-            width: 120px;
-            height: auto;
-            margin-bottom: 20px;
-            border-radius: 50%;  /* Optional for rounded logo */
-            border: 2px solid goldenrod;
+            z-index: -1;
         }
 
-        h1 {
-            font-size: 36px;
+        h2 {
+            font-size: 32px;
             color: goldenrod;
             margin-bottom: 20px;
             border-bottom: 2px solid goldenrod;
             padding-bottom: 10px;
         }
 
-        p {
-            font-size: 18px;
-            margin: 10px 0;
-            color: white;
-            text-align: left; 
-        }
         table {
             width: 100%;
             border-collapse: collapse;
@@ -114,6 +100,36 @@
             box-shadow: 0 0 10px goldenrod;
         }
 
+        .glowing-arrow {
+            font-size: 40px;
+            color: goldenrod;
+            cursor: pointer;
+            text-shadow: 
+                0 0 10px goldenrod, 
+                0 0 20px goldenrod, 
+                0 0 30px goldenrod, 
+                0 0 40px goldenrod;
+            transition: transform 0.3s ease-in-out;
+            animation: glow 1.5s ease-in-out infinite;
+            margin-right: 120px;
+        }
+
+        .glowing-arrow:hover {
+            transform: scale(1.2) rotate(-10deg);
+            color: orange;
+            text-shadow: 
+                0 0 20px orange, 
+                0 0 30px orange, 
+                0 0 40px orange, 
+                0 0 50px orange;
+        }
+
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+            50% { text-shadow: 0 0 30px goldenrod, 0 0 40px goldenrod; }
+            100% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-20px); }
             to { opacity: 1; transform: translateY(0); }
@@ -121,39 +137,32 @@
     </style>
 </head>
 <body>
-    <div class="success-container">
-        <div class="success-card">
-            <!-- ✅ Logo with Alt Text for Debugging -->
-            <img src="{% static 'images/logo.webp' %}" alt="Company Logo" class="logo">
-            <h1>Payment Successful</h1>
-            <p>Order ID: {{ order.order_id }}</p>
-            <p>Total Amount: Rs. {{ order.total_amount }}</p>
-            <p>Payment Method: {{ payment_method }}</p>
-
-            <h3>Items Purchased:</h3>
+    <div class="order-container">
+        <div class="order-card">
+            <h2>Order Details for Order #{{ order.order_id }}</h2>
             <table>
                 <thead>
                     <tr>
                         <th>Book Title</th>
-                        <th>Price</th>
                         <th>Quantity</th>
-                        <th>Total</th>
+                        <th>Price</th>
+                        <th>Order Date</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in order_items %}
                     <tr>
                         <td>{{ item.book.title }}</td>
-                        <td>Rs. {{ item.price }}</td>
                         <td>{{ item.quantity }}</td>
-                        <td>Rs. {{ item.price|floatformat:2 }}</td>
+                        <td>Rs. {{ item.price }}</td>
+                        <td>{{ order.order_date }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
-          
-            <a href="/" class="back-btn" >Back to Home</a>
 
+            <i class="fas fa-arrow-left glowing-arrow" onclick="window.history.back()"></i>
+            <a href="{% url 'home_page' %}" class="back-btn">Back to Home Page</a>
         </div>
     </div>
 </body>

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Book List</title>
     <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
@@ -19,42 +20,45 @@
         }
         .container {
             max-width: 1200px;
-            margin: 50px auto;
+            margin: 0px auto;
             padding: 20px;
             background-color: black;
         }
         h1 {
             color: goldenrod;
             text-align: center;
-        }
+            font-family: 'Dancing Script', cursive; /* Fancy print font */
+            font-size: 3rem; /* Increase size to make it more prominent */
+            margin-top: 20px; /* Reduced gap between heading and top of the page */
+            }
         .search-container {
-            display: flex; /* Aligns items horizontally */
-            justify-content: center; /* Centers the search bar and icon horizontally */
-            align-items: center; /* Aligns items vertically */
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
             margin-bottom: 20px;
         }
         
         .search-bar {
-            flex: 1; /* Allows the search bar to take up available space */
-            max-width: 500px; /* Ensures a reasonable maximum width */
+            flex: 1;
+            max-width: 500px;
             padding: 10px;
             font-size: 16px;
             border: none;
-            border-radius: 5px 0 0 5px; /* Rounded corners on the left */
+            border-radius: 5px 0 0 5px;
         }
         
         .search-icon-container {
-            background-color: #333; /* Icon container background color */
+            background-color: #333;
             padding: 10px;
-            border-radius: 0 5px 5px 0; /* Rounded corners on the right */
+            border-radius: 0 5px 5px 0;
             display: flex;
-            align-items: center; /* Centers the icon vertically */
-            justify-content: center; /* Centers the icon horizontally */
+            align-items: center;
+            justify-content: center;
         }
         
         .search-icon {
-            font-size: 20px; /* Adjust icon size */
-            color: white; /* Icon color */
+            font-size: 20px;
+            color: white;
         }
 
         .bestsellers-section {
@@ -64,8 +68,8 @@
             gap: 15px;
         }
         .book-frame {
-            width: 150px; /* Reduced width */
-            padding: 10px; /* Reduced padding */
+            width: 150px;
+            padding: 10px;
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 8px rgba(1, 1, 1, 0.2);
@@ -77,50 +81,78 @@
         }
         .book-frame img {
             width: 100%;
-            height: 150px; /* Reduced height */
+            height: 150px;
             border-radius: 8px;
         }
         .book-title {
-            font-size: 14px; /* Smaller font size */
+            font-size: 14px;
             font-weight: bold;
-            margin: 5px 0; /* Reduced margin */
+            margin: 5px 0;
             color: #333;
         }
         .book-author {
-            font-size: 12px; /* Smaller font size */
+            font-size: 12px;
             color: #777;
-            margin-bottom: 5px; /* Reduced margin */
+            margin-bottom: 5px;
         }
         .btn {
-            background-color: #333;
+            background-color: goldenrod;
             color: #fff;
-            padding: 10px 20px; /* Restored larger size */
+            padding: 10px 20px;
             text-decoration: none;
             border-radius: 5px;
-            font-size: 14px; /* Restored larger font size */
+            font-size: 14px;
         }
         .btn:hover {
             background-color: #444;
         }
-        .back-home {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 5px 10px; /* Reduced padding for a smaller button */
-            background-color: goldenrod !important; /* Ensure the background is goldenrod */
-            color: black !important; /* Ensure the text color is black */
-            text-decoration: none; /* Removes underline */
-            border-radius: 5px; /* Rounded corners */
-            font-weight: bold; /* Bold text */
-            font-size: 14px; /* Smaller font size */
-            text-align: center; /* Centers text inside the button */
-            display: inline-block; /* Ensures proper button styling */
-        }
+
+/* Adjusted positioning for top buttons */
+.top-buttons {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.glowing-arrow {
+    font-size: 40px;
+    color: goldenrod;
+    cursor: pointer;
+    text-shadow: 
+        0 0 10px goldenrod, 
+        0 0 20px goldenrod, 
+        0 0 30px goldenrod, 
+        0 0 40px goldenrod;
+    transition: transform 0.3s ease-in-out;
+    animation: glow 1.5s ease-in-out infinite;
+}
+
+.glowing-arrow:hover {
+    transform: scale(1.2) rotate(-10deg);
+    color: orange;
+    text-shadow: 
+        0 0 20px orange, 
+        0 0 30px orange, 
+        0 0 40px orange, 
+        0 0 50px orange;
+}
+
+@keyframes glow {
+    0% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+    50% { text-shadow: 0 0 30px goldenrod, 0 0 40px goldenrod; }
+    100% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+}
+
     </style>
 </head>
 <body>
-    <!-- Back to Home Button -->
-    <div class="back-home">
+    <!-- Top Buttons Container -->
+    <div class="top-buttons">
+        <!-- Back Arrow Button on the Left -->
+        <i class="fas fa-arrow-left glowing-arrow" onclick="window.history.back()"></i>
+
+        <!-- Back to Home Button on the Right -->
         <a href="/" class="btn">Back to Home</a>
     </div>
 
@@ -128,36 +160,56 @@
         <h1>List of Books</h1>
 
         <!-- Search Bar -->
-        <div class="search-container">
-            <form method="get" action="{% url 'book_list' %}" style="display: flex; width: 100%; max-width: 600px;">
-                <input type="text" name="q" placeholder="Search Title, Author, Keyword..." class="search-bar" id="searchInput" value="{{ request.GET.q }}">
-                <button type="submit" class="search-icon-container">
-                    <i class="fas fa-search search-icon"></i>
-                </button>
-            </form>
-        </div>
+<div class="search-container">
+    <form method="get" action="{% url 'book_list' %}" style="display: flex; width: 100%; max-width: 600px;" onsubmit="return false;">
+        <input type="text" name="q" placeholder="Search Title, Author, Keyword..." class="search-bar" id="searchInput">
+        <button type="submit" class="search-icon-container">
+            <i class="fas fa-search search-icon"></i>
+        </button>
+    </form>
+</div>
 
-        <!-- Book List -->
-        <div class="bestsellers-section">
-            {% for book in books %}
-                <div class="book-frame">
-                    {% if book.cover_image %}
-                        <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
-                    {% else %}
-                        <img src="/static/images/default_cover.jpg" alt="No cover image">
-                    {% endif %}
-                    <h3 class="book-title">{{ book.title }}</h3>
-                    <p class="book-author">Author: {{ book.author.name }}</p>
-                    <p class="book-author">Published: {{ book.published_year }}</p>
-                    <p class="book-author">Price: Rs {{ book.price }}</p>
-                    <a href="{% url 'book_detail' book.pk %}" class="btn">More Details</a>
-                </div>
-            {% empty %}
-                <p>No books found matching your search.</p>
-            {% endfor %}
+<!-- Book List -->
+<div class="bestsellers-section" id="bookList">
+    {% for book in books %}
+        <div class="book-frame" data-title="{{ book.title }}" data-author="{{ book.author.name }}" data-genre="{{ book.genre }}">
+            {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" alt="{{ book.title }}">
+            {% else %}
+                <img src="/static/images/default_cover.jpg" alt="No cover image">
+            {% endif %}
+            <h3 class="book-title">{{ book.title }}</h3>
+            <p class="book-author">Author: {{ book.author.name }}</p>
+            <p class="book-author">Published: {{ book.published_year }}</p>
+            <p class="book-author">Price: Rs {{ book.price }}</p>
+            <a href="{% url 'book_detail' book.pk %}" class="btn">More Details</a>
         </div>
-    </div>
+    {% empty %}
+        <p>No books available.</p>
+    {% endfor %}
+</div>
 
+<!-- JavaScript for Live Search -->
+<script>
+    const searchInput = document.getElementById('searchInput');
+    const books = document.querySelectorAll('.book-frame');
+
+    searchInput.addEventListener('input', function() {
+        const query = searchInput.value.toLowerCase().trim();
+
+        books.forEach(book => {
+            const title = book.getAttribute('data-title').toLowerCase();
+            const author = book.getAttribute('data-author').toLowerCase();
+            const genre = book.getAttribute('data-genre') ? book.getAttribute('data-genre').toLowerCase() : '';
+
+            if (title.includes(query) || author.includes(query) || genre.includes(query)) {
+                book.style.display = 'block';
+            } else {
+                book.style.display = 'none';
+            }
+        });
+    });
+</script>
     <!-- Bootstrap JS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 </body>

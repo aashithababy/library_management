@@ -1,131 +1,184 @@
+{% load extra_filters %}
 {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Author</title>
+    <style>
+        body {
+            padding: 0;
+            background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
+            font-family: Arial, sans-serif;
+            background-size: cover;
+            background-attachment: fixed;
+            color: #fff;
+            padding-left: 20px;
+            padding-right: 20px;
+            min-height: 100vh;
+        }
 
-{% block content %}
-<div class="container">
-    <div class="card">
-        <h1 class="card-title">Add New Author</h1>
-        
-        <!-- Form with proper enctype and error handling -->
-        <form method="post" enctype="multipart/form-data">
+        .form-container {
+            background-color: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 6px 4px goldenrod;
+            width: 450px;
+            text-align: center;
+            border: 1px solid goldenrod;
+            max-width: 100%;
+            margin: auto;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 30px;
+            color: goldenrod;
+        }
+
+        .form-label {
+            color: #fff;
+            font-weight: bold;
+            text-align: left;
+            display: block;
+        }
+
+        .form-control {
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #444;
+            border-radius: 4px;
+            width: 94%;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .form-errors {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px; /* Add space between error and input field */
+        }
+
+        button[type="submit"] {
+            padding: 10px;
+            background-color: goldenrod;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        button[type="submit"]:hover {
+            background-color: darkgoldenrod;
+        }
+
+        img.preview {
+            margin-top: 10px;
+            max-width: 100px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h1>Add New Author</h1>
+        <form method="POST" enctype="multipart/form-data" onsubmit="return validateForm()">
             {% csrf_token %}
-            <table class="table">
-                {% for field in form %}
-                <tr>
-                    <td>{{ field.label_tag }}</td>
-                    <td>
-                        {% if field.name == 'profile_picture' %}
-                            <!-- Custom file input handling -->
-                            {{ field }}
-                            <span id="file-name" style="font-weight: bold; color: goldenrod;"></span>
-                        {% else %}
-                            {{ field }}
-                        {% endif %}
-                        
-                        {% if field.errors %}
-                            <p class="invalid-feedback">{{ field.errors.as_text }}</p>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </table>
-            {% if next %}
-                <input type="hidden" name="next" value="{{ next }}">
-            {% endif %}
-            <!-- Centered submit button -->
-            <div style="text-align: center; margin-top: 20px;">
-                <button type="submit" class="btn">Add Author</button>
+
+            <!-- Name -->
+            <div class="form-group">
+                <label for="id_name" class="form-label">Name:</label>
+                {{ form.name|add_class:"form-control" }}
+                <div class="form-errors" id="name-length-error"></div>
+                <div class="form-errors" id="name-letters-error"></div>
+            </div><br>
+
+            <!-- Bio -->
+            <div class="form-group">
+                <label for="id_bio" class="form-label">Bio:</label>
+                {{ form.bio|add_class:"form-control" }}
+                <div class="form-errors" id="bio-error"></div>
+            </div><br>
+
+            <!-- Profile Picture with Preview -->
+            <div class="form-group">
+                <label for="id_profile_picture" class="form-label">Profile Picture:</label>
+                {{ form.profile_picture|add_class:"form-control" }}
+                {% if form.profile_picture.errors %}
+                    <div class="form-errors">{{ form.profile_picture.errors }}</div>
+                {% endif %}
+                <img id="profile-picture-preview" class="preview" alt="Profile Picture Preview">
             </div>
+
+            <button type="submit">Add Author</button>
         </form>
     </div>
-</div>
 
-<!-- CSS Styling for the Form -->
-<style>
-    .table {
-        border-spacing: 0 10px;
-        width: 100%;
-    }
+    <script>
+        document.getElementById('id_profile_picture').addEventListener('change', function(event) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgElement = document.getElementById('profile-picture-preview');
+                imgElement.src = e.target.result;
+                imgElement.style.display = 'block';
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        });
 
-    .table td {
-        vertical-align: top;
-        padding: 10px;
-    }
+        document.getElementById('id_name').addEventListener('input', function() {
+            validateName();
+        });
+        document.getElementById('id_bio').addEventListener('input', validateBio);
 
-    .container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        min-height: 100vh;
-        background: url('{% static "images/background1.jpeg" %}') no-repeat center center fixed;
-        background-size: cover;
-        background-attachment: fixed;
-    }
+        function validateName() {
+            const nameInput = document.getElementById('id_name').value;
+            const nameLengthError = document.getElementById('name-length-error');
+            const nameLettersError = document.getElementById('name-letters-error');
+            const lengthRegex = /^.{3,}$/;
+            const lettersRegex = /^[A-Za-z ]+$/;
 
-    .card {
-        margin-top: 20px;
-        background-color: black;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 6px 20px goldenrod;
-        width: 100%;
-        max-width: 500px;
-        color: white;
-    }
+            // Validate name length
+            if (!lengthRegex.test(nameInput)) {
+                nameLengthError.textContent = 'Name must be at least 3 characters long.';
+            } else {
+                nameLengthError.textContent = '';
+            }
 
-    .card-title {
-        font-size: 28px;
-        margin-bottom: 20px;
-        color: goldenrod;
-        text-align: center;
-    }
+            // Validate name letters
+            if (!lettersRegex.test(nameInput)) {
+                nameLettersError.textContent = 'Name can only contain letters and spaces.';
+            } else {
+                nameLettersError.textContent = '';
+            }
+        }
 
-    .card label {
-        color: white;
-    }
+        function validateBio() {
+            const bioInput = document.getElementById('id_bio').value;
+            const bioError = document.getElementById('bio-error');
+            if (bioInput.length < 10) {
+                bioError.textContent = 'Bio must be at least 10 characters long.';
+            } else {
+                bioError.textContent = '';
+            }
+        }
 
-    .btn {
-        width: 40%;
-        color: white;
-        background-color: goldenrod;
-        height: 50px;
-        font-size: 16px;
-        padding: 10px;
-        text-align: center;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
+        function validateForm() {
+            validateName();
+            validateBio();
 
-    .btn:hover {
-        background-color: darkgoldenrod;
-    }
+            const nameLengthError = document.getElementById('name-length-error').textContent;
+            const nameLettersError = document.getElementById('name-letters-error').textContent;
+            const bioError = document.getElementById('bio-error').textContent;
 
-    .form-control {
-        width: 100%;
-        height: 30px;
-        padding: 10px;
-        font-size: 16px;
-        color: white;
-    }
-
-    .alert-danger {
-        color: red;
-        font-weight: bold;
-        margin-top: 10px;
-    }
-
-    .invalid-feedback {
-        color: red !important;
-        font-weight: bold;
-        display: block;
-    }
-</style>
-
-<!-- JavaScript for displaying the chosen file name -->
-<script>
-    document.getElementById('id_profile_picture').addEventListener('change', function(event) {
-        var fileName = event.target.files[0].name;
-        document.getElementById('file-name').textContent = fileName;
-    });
-</script>
-{% endblock %}
+            if (nameLengthError || nameLettersError || bioError) {
+                alert('Please correct the errors before submitting.');
+                return false;
+            }
+            return true;
+        }
+    </script>
+</body>
+</html>

@@ -1,7 +1,20 @@
+/* General Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 /* General Styles */
 body {
     font-family: Arial, sans-serif;
     color: #000000;
+    background-color: black;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
 }
 
 /* Hero Section */
@@ -32,23 +45,11 @@ footer {
 }
 
 .buy-button[disabled] {
-    background-color: grey; /* Disabled button color */
+    background-color: grey;
     cursor: not-allowed;
-}
-/* Reset default styles */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-   
-}
-
-body {
-    font-family: Arial, sans-serif;
 }
 
 /* Header/Nav Bar Styles */
-
 .navbar-top {
     font-weight: bold;
     display: flex;
@@ -59,15 +60,8 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
-.navbar-top {
-    display: flex;
-    align-items: center;
-    gap: 30px;
-}
-
 .navbar-top a {
     margin-right: 20px;
-    
     text-decoration: none;
     font-style: italic;
     color: white;
@@ -84,22 +78,27 @@ body {
 }
 
 /* Logo */
-.logo {
-    padding-top: 10px;
-    padding-bottom: 8px;
-    font-size: 25px;
-    font-weight: bold;
-    color: white;
+/* Logo container to center the logo text and icon */
+.logo-container {
     display: flex;
-    justify-content: center;
-
+    align-items: center;          /* Vertically align text and icon in the center */
+    justify-content: center;      /* Horizontally center the items */
+    padding: 20px;                /* Add padding around the container */
 }
 
-.logo span {
-    color: #ff0000; /* Color for the holly leaf */
+/* Logo text styles */
+.logo-text {
+    font-size: 30px;              /* Set font size for the text */
+    font-weight: bold;            /* Make the font bold */
+    color: white;                 /* Set text color to white */
 }
 
-/* Second Nav - Categories */
+/* Logo icon styles */
+.logo-icon {
+    font-size: 30px;              /* Set font size for the icon */
+    padding-left: 10px;           /* Add spacing between the text and icon */
+}
+
 .categories {
     display: flex;
     justify-content: center;
@@ -108,60 +107,53 @@ body {
     border-bottom: 1px solid #ccc;
 }
 
+.categories button {
+    background-color: black !important;
+    border: none !important;
+    padding: 10px 15px !important;
+    cursor: pointer;
+    box-shadow: none !important;
+    outline: none !important;
+}
+
 .categories a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: white;
-    font-weight: bold;
-    font-size: 14px;
+    text-decoration: none !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+.categories button:hover {
+    background-color: #333 !important;
 }
 
 .categories a:hover {
-    color: #007bff;
+    color: #007bff !important;
 }
 
 /* Search Bar */
 .search-container {
     position: relative;
-    width: 100%; /* Adjust as needed */
-    max-width: 400px; /* Optional for limiting width */
+    width: 100%;
+    max-width: 400px;
 }
 
 .search-bar {
     width: 100%;
     padding: 10px 15px;
     font-size: 16px;
-    color: white; /* Text color inside the input */
-    background-color: white; /* Input background color */
-    border: 1px solid vlack; /* Optional border */
-    border-radius: 5px; /* Rounded corners */
-    outline: none; /* Remove default outline */
+    color: black;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 5px;
+    outline: none;
 }
 
 .search-bar:focus {
-    border-color: #007BFF; /* Highlight border color on focus */
-    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Optional focus effect */
+    border-color: #007BFF;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
 }
 
-.search-icon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #ccc; /* Icon color */
-    pointer-events: none; /* Prevent clicking the icon */
-}
-
-.results {
-    position: absolute;
-    top: 100%; /* Place below the input field */
-    left: 0;
-    width: 100%;
-    background: black; /* Background color for results */
-    border: 1px solid #ccc; /* Optional border for dropdown */
-    border-radius: 0 0 5px 5px; /* Rounded bottom corners */
-    display: none; /* Initially hidden */
-}
 /* Banner Section */
 .banner {
     position: relative;
@@ -181,132 +173,65 @@ body {
     border-radius: 5px;
 }
 
-.banner h1 {
-    font-size: 36px;
+/* Bestsellers Section */
+.bestsellers-section {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 20px;
+    padding: 10px;
+}
+
+.book-frame {
+    width: 200px;
+    padding: 15px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(1, 1, 1, 0.2);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.book-frame:hover {
+    transform: translateY(-5px);
+}
+
+.book-frame img {
+    width: 100%;
+    border-radius: 8px;
+}
+
+.book-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #333;
+}
+
+.book-author {
+    font-size: 14px;
+    color: #777;
     margin-bottom: 10px;
 }
 
-.banner h2 {
-    font-size: 24px;
-    color: black;
-    margin-bottom: 20px;
-}
-
-.banner button {
-    padding: 10px 20px;
+.buy-button {
+    padding: 8px 16px;
     background-color: #333;
     color: #fff;
     border: none;
     border-radius: 5px;
-    font-size: 16px;
     cursor: pointer;
-}
-
-.banner button:hover {
-    background-color: #555;
-}
-
-  /* Basic Reset */
-  * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    background-color:black;
-    padding: 20px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-}
-
-/* Bestsellers Section */
-.bestsellers-section {
-width: 100%;
-max-width: 1200px;
-display: flex;
-flex-wrap: wrap;
-justify-content: space-around;
-gap: 20px;
-height: 400px; /* Set a fixed height for the scrollable area */
-/* Optional: add a border to define the scrollable area */
-padding: 10px; /* Optional: add padding for better spacing */
-}
-
-.book-frame {
-width: 200px;
-padding: 15px;
-background-color: #fff;
-border-radius: 8px;
-box-shadow: 0 4px 8px rgba(1, 1, 1, 0.2);
-text-align: center;
-transition: transform 0.3s ease;
-}
-
-.book-frame:hover {
-transform: translateY(-5px);
-}
-
-.book-frame img {
-width: 100%;
-height: auto;
-border-radius: 8px;
-}
-
-.book-title {
-font-size: 16px;
-font-weight: bold;
-margin: 10px 0;
-color: #333;
-}
-
-.book-author {
-font-size: 14px;
-color: #777;
-margin-bottom: 10px;
-}
-
-.buy-button {
-padding: 8px 16px;
-background-color: #333;
-color: #fff;
-border: none;
-border-radius: 5px;
-cursor: pointer;
-font-size: 14px;
-text-decoration: none;
+    font-size: 14px;
+    text-decoration: none;
 }
 
 .buy-button:hover {
-background-color: #4caf50;
+    background-color: #4caf50;
 }
 
-.results {
-    margin-top: 10px;
-    background-color: #fff;
-    border: 1px solid #ccc;
-    max-width: 400px;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.result-item {
-    padding: 10px;
-    border-bottom: 1px solid #ddd;
-    cursor: pointer;
-}
-
-.result-item:hover {
-    background-color: #f4f4f4;
-}
-
-.no-results {
-    padding: 10px;
-    color: red;
-}
-
+/* Responsive Styles */
 @media (max-width: 768px) {
     .navbar-top {
         flex-direction: column;
@@ -315,22 +240,18 @@ background-color: #4caf50;
 
     .categories {
         flex-wrap: wrap;
-        justify-content: center;
     }
+}
 
-    .categories a {
-        margin: 5px;
-    }
+/* Additional Styling for Search Input */
+#searchInput {
+    color: black;
 }
 
 body .navbar-top .fancy-welcome {
     font-family: 'Dancing Script', cursive;
     color: green;
-    font-size: 20px;
+    font-size: 50px;
     font-weight: bold;
     text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.2);
-}
-
-#searchInput {
-    color: black;
 }

@@ -1,6 +1,7 @@
 import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from catalog.models import Book,Cart
 
 # Roles Table
 class Role(models.Model):
@@ -17,7 +18,7 @@ class Address(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='addresses')
     city = models.CharField(max_length=255)
     state = models.CharField(max_length=255)
-    postal_code = models.CharField(max_length=20)
+    postal_code = models.CharField(max_length=20,blank=True, null=True)
     country = models.CharField(max_length=255)
     house_number_or_lane = models.CharField(max_length=255, null=True, blank=True, default=None)
 
@@ -30,6 +31,7 @@ class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     address = models.ForeignKey(Address, on_delete=models.SET_NULL, null=True)  # ForeignKey to Address
     phone_number = models.CharField(max_length=15)
+    photo = models.ImageField(upload_to='profile_photos/', blank=True, null=True)
 
     def __str__(self):
         return self.user.username
@@ -41,6 +43,21 @@ class Order(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     order_date = models.DateField()
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=50, blank=True, null=True)
+
+    def __str__(self):
+        return f"Order {self.order_id} - {self.user.username}"
+    
+# OrderItem Table
+class OrderItem(models.Model):
+    order = models.ForeignKey('Order', on_delete=models.CASCADE)
+    book = models.ForeignKey(Book, on_delete=models.CASCADE)  
+    cart = models.ForeignKey(Cart, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.book.title} - {self.quantity} pcs"
 
 
 # Renewal Messages Table

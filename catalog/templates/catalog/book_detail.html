@@ -127,6 +127,42 @@
         #homeButton:hover {
             background-color:rgb(115, 82, 0); /* Darker goldenrod shade for hover effect */
         }
+        .top-buttons {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0px;
+        }
+        
+        .glowing-arrow {
+            font-size: 40px;
+            color: goldenrod;
+            cursor: pointer;
+            text-shadow: 
+                0 0 10px goldenrod, 
+                0 0 20px goldenrod, 
+                0 0 30px goldenrod, 
+                0 0 40px goldenrod;
+            transition: transform 0.3s ease-in-out;
+            animation: glow 1.5s ease-in-out infinite;
+        }
+        
+        .glowing-arrow:hover {
+            transform: scale(1.2) rotate(-10deg);
+            color: orange;
+            text-shadow: 
+                0 0 20px orange, 
+                0 0 30px orange, 
+                0 0 40px orange, 
+                0 0 50px orange;
+        }
+        
+        @keyframes glow {
+            0% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+            50% { text-shadow: 0 0 30px goldenrod, 0 0 40px goldenrod; }
+            100% { text-shadow: 0 0 10px goldenrod, 0 0 20px goldenrod; }
+        }
+        
         
     </style>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -197,7 +233,12 @@
     <Book_Overview>
         <div class="book-overview">
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            <a href="{% url 'home_page' %}" class="button" id="homeButton">Back to Home Page</a>
+            <div class="top-buttons">
+                <!-- Back Arrow Button on the Left -->
+                <i class="fas fa-arrow-left glowing-arrow" onclick="window.history.back()"></i>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                <a href="{% url 'home_page' %}" class="button" id="homeButton">Back to Home Page</a>
+            </div>
+            
             {% for paragraph in paragraphs %}
                 <p>{{ paragraph }}</p>
             {% endfor %}
